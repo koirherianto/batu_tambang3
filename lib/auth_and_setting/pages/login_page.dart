@@ -78,7 +78,6 @@ class LoginPage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is LoginSubmitSt) {
-          print(['login state', state]);
           StateView stateView = state.stateView;
           if (stateView is LoadingStateView) {
             return _form(context, isLoading: true);

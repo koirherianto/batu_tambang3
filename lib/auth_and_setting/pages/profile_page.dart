@@ -1,4 +1,6 @@
 import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
+import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
+import 'package:batu_tambang/model/user_model.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:batu_tambang/static_data/decoration.dart';
@@ -6,10 +8,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key});
+  final UserModel userModel;
+  ProfilePage({super.key, required this.userModel});
 
   final TextEditingController _emailC = TextEditingController();
-  final TextEditingController _passwordC = TextEditingController();
   final TextEditingController _namaLengkapC = TextEditingController();
   final TextEditingController _namaPanggilanC = TextEditingController();
 
@@ -33,27 +35,7 @@ class ProfilePage extends StatelessWidget {
               style: TextStyle(fontFamily: 'Trueno', fontSize: 60.0),
             ),
             const SizedBox(height: 20),
-            _formBloc(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Sudah punya akun ?'),
-                const SizedBox(width: 5.0),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(
-                      color: Decorations.greenColor,
-                      fontFamily: 'Trueno',
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                )
-              ],
-            )
+            _formBloc()
           ],
         ),
       ),
@@ -63,9 +45,9 @@ class ProfilePage extends StatelessWidget {
   BlocBuilder<AuthBloc, AuthState> _formBloc() {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state is RegisterSubmitSt) {
-          print(['state Register', state]);
+        if (state is ProfileUpdateSt) {
           StateView stateView = state.stateView;
+          print(['stateView', stateView]);
 
           if (stateView is LoadingStateView) {
             return _form(context, isLoading: true);
@@ -81,9 +63,9 @@ class ProfilePage extends StatelessWidget {
           if (stateView is SuccessStateView) {
             SchedulerBinding.instance.addPostFrameCallback((_) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Berhasil Terdaftar, Silahkan Masuk'),
-                    duration: Duration(seconds: 1)),
+                SnackBar(
+                    content: Text('${stateView.data['message'] ?? 'Success'}'),
+                    duration: const Duration(seconds: 1)),
               );
             });
             Navigator.pop(context);
@@ -104,29 +86,22 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
-            controller: _namaLengkapC,
-            validator: (_) => _errMsg['nama_lengkap'],
             keyboardType: TextInputType.name,
+            validator: (_) => _errMsg['nama_lengkap'],
+            controller: _namaLengkapC..text = userModel.namaLengkap,
             decoration: Decorations.inputDecoration(title: 'NAMA LENGKAP'),
           ),
           TextFormField(
-            controller: _namaPanggilanC,
-            validator: (_) => _errMsg['nama_panggilan'],
             keyboardType: TextInputType.name,
+            validator: (_) => _errMsg['nama_panggilan'],
+            controller: _namaPanggilanC..text = userModel.namaPanggilan,
             decoration: Decorations.inputDecoration(title: 'NAMA PANGGILAN'),
           ),
           TextFormField(
-            controller: _emailC,
-            validator: (_) => _errMsg['email'],
             keyboardType: TextInputType.emailAddress,
+            validator: (_) => _errMsg['email'],
+            controller: _emailC..text = userModel.email,
             decoration: Decorations.inputDecoration(title: 'EMAIL'),
-          ),
-          TextFormField(
-            obscureText: true,
-            controller: _passwordC,
-            keyboardType: TextInputType.visiblePassword,
-            validator: (_) => _errMsg['password'],
-            decoration: Decorations.inputDecoration(title: 'PASSWORD'),
           ),
           const SizedBox(height: 50.0),
           isLoading
@@ -136,16 +111,15 @@ class ProfilePage extends StatelessWidget {
                     _errMsg.clear();
                     if (_formKey.currentState != null) {
                       if (_formKey.currentState!.validate()) {
-                        context.read<AuthBloc>().add(RegisterSubmitEv(
+                        context.read<AuthBloc>().add(ProfileUpdateEv(
                               namaLengkap: _namaLengkapC.text,
                               namaPanggilan: _namaPanggilanC.text,
-                              password: _passwordC.text,
                               email: _emailC.text,
                             ));
                       }
                     }
                   },
-                  child: Decorations.submitButton(title: 'Daftar'),
+                  child: Decorations.submitButton(title: 'Ubah Profil'),
                 ),
           const SizedBox(height: 20),
         ],

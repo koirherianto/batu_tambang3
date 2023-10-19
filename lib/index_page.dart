@@ -1,4 +1,3 @@
-import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
 import 'package:batu_tambang/auth_and_setting/pages/setting_page.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +14,7 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> halaman = [
-      ProfilePage(),
+      const SettingPage(),
       const SettingPage(),
     ];
 

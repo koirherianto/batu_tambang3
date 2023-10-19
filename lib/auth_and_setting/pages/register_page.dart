@@ -64,7 +64,6 @@ class RegisterPage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is RegisterSubmitSt) {
-          print(['state Register', state]);
           StateView stateView = state.stateView;
 
           if (stateView is LoadingStateView) {

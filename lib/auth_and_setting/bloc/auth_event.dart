@@ -38,6 +38,21 @@ class MeEv extends AuthEvent {
   List<Object> get props => [];
 }
 
+class ProfileUpdateEv extends AuthEvent {
+  final String namaLengkap;
+  final String namaPanggilan;
+  final String email;
+
+  const ProfileUpdateEv({
+    this.namaLengkap = '',
+    this.namaPanggilan = '',
+    this.email = '',
+  });
+
+  @override
+  List<Object> get props => [namaLengkap, namaPanggilan, email];
+}
+
 class PasswordUpdateEv extends AuthEvent {
   final String passwordLama, passwordBaru, passwordConfirm;
 
@@ -49,23 +64,6 @@ class PasswordUpdateEv extends AuthEvent {
 
   @override
   List<Object> get props => [passwordLama, passwordBaru, passwordConfirm];
-}
-
-class ProfileUpdateEv extends AuthEvent {
-  final String namaLengkap;
-  final String namaPanggilan;
-  final String email;
-  final String password;
-
-  const ProfileUpdateEv({
-    this.namaLengkap = '',
-    this.namaPanggilan = '',
-    this.email = '',
-    this.password = '',
-  });
-
-  @override
-  List<Object> get props => [namaLengkap, namaPanggilan, email, password];
 }
 
 class UpdateFotoUserEv extends AuthEvent {

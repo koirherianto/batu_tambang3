@@ -71,7 +71,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
 
+      print(['response', response]);
+
       if (response['success'] == true) {
+        Map<String, dynamic> dataUser = response['data']['user'];
+        await mePrefrences.setMe(
+          id: dataUser['id'] ?? 0,
+          namaLengkap: dataUser['nama_lengkap'] ?? '',
+          namaPanggilan: dataUser['nama_panggilan'] ?? '',
+          email: dataUser['email'] ?? '',
+          role: dataUser['role'] ?? '',
+          urlProfil: response['url_profil'] ?? '',
+        );
         await tokenService.setLocalToken(response['data']['token']);
         emit(const LoginSubmitSt(stateView: SuccessStateView()));
       }
@@ -139,6 +150,56 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await Future.delayed(const Duration(seconds: 1));
       emit(const LogoutSt(stateView: InitialStateView()));
+    });
+
+    on<ProfileUpdateEv>((event, emit) async {
+      emit(const ProfileUpdateSt(stateView: LoadingStateView()));
+
+      Map<String, dynamic> response = await authApi.updateProfile(
+        email: event.email,
+        namaLengkap: event.namaLengkap,
+        namaPanggilan: event.namaPanggilan,
+        tokenService: tokenService,
+      );
+
+      if (response['success'] == true) {
+        Map<String, dynamic> dataUser = response['data']['user'];
+        await mePrefrences.setMe(
+          id: dataUser['id'] ?? 0,
+          namaLengkap: dataUser['nama_lengkap'] ?? '',
+          namaPanggilan: dataUser['nama_panggilan'] ?? '',
+          email: dataUser['email'] ?? '',
+          role: dataUser['role'] ?? '',
+          urlProfil: response['url_profil'] ?? '',
+        );
+        emit(ProfileUpdateSt(stateView: SuccessStateView(data: response)));
+      }
+
+      if (response['success'] == false) {
+        final Map<String, dynamic> errorMap = response["error"] ?? {};
+        if (errorMap.isNotEmpty) {
+          emit(
+            ProfileUpdateSt(stateView: FailedStateView(errorMassage: errorMap)),
+          );
+        }
+
+        final Map<String, dynamic> exeption = response["exeption"] ?? {};
+        if (exeption.isNotEmpty) {
+          emit(
+            ProfileUpdateSt(stateView: FailedStateView(errorMassage: exeption)),
+          );
+        }
+
+        final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
+        if (unAuth.isNotEmpty) {
+          emit(
+            const ProfileUpdateSt(stateView: UnauthenticatedStateView()),
+          );
+        }
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      emit(const ProfileUpdateSt(stateView: InitialStateView()));
     });
   }
 }

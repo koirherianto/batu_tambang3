@@ -87,14 +87,25 @@ class AuthApi {
     }
   }
 
-  Future<Map<String, dynamic>> logoutApi(TokenService tokenService) async {
+  Future updateProfile({
+    required String namaLengkap,
+    required String namaPanggilan,
+    required String email,
+    required TokenService tokenService,
+  }) async {
     try {
       String token = await tokenService.getLocalToken();
-
       dio.options.headers["authorization"] = "Bearer $token";
-      final String url = '${baseURL}auth/logout';
+      final String url = '${baseURL}auth/updateProfil';
 
-      http_dio.Response response = await dio.post(url);
+      http_dio.Response response = await dio.post(
+        url,
+        data: {
+          'nama_lengkap': namaLengkap,
+          'nama_panggilan': namaPanggilan,
+          'email': email
+        },
+      );
 
       if (response.statusCode == 200) {
         final responeBody = jsonDecode(jsonEncode(response.data));
@@ -108,7 +119,36 @@ class AuthApi {
       }
     } on http_dio.DioException catch (ex) {
       Map<String, dynamic> exeption =
-          apiExeption.getExeptionMessage(ex, 'register');
+          apiExeption.getExeptionMessage(ex, 'logout');
+      debugPrintApi(exeption);
+      return {'success': false, 'exeption': exeption};
+    }
+  }
+
+  Future<Map<String, dynamic>> logoutApi(TokenService tokenService) async {
+    try {
+      String token = await tokenService.getLocalToken();
+
+      dio.options.headers["authorization"] = "Bearer $token";
+      final String url = '${baseURL}auth/logout';
+
+      http_dio.Response response = await dio.post(url);
+
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else if (response.statusCode == 401) {
+        return {'success': true, 'unauthenticated': response.data};
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'logout');
       debugPrintApi(exeption);
       return {'success': false, 'exeption': exeption};
     }
@@ -150,43 +190,6 @@ class AuthApi {
   //   } on http_dio.DioException catch (ex) {
   //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
   //     debugPrintApi(exeption);
-  //     return null;
-  //   }
-  // }
-
-  // Future updateProfile({
-  //   required int? id,
-  //   required String newName,
-  //   required String newContact,
-  //   required String newEmail,
-  //   required String newAlamat,
-  // }) async {
-  //   try {
-  //     String token = await getLocalToken();
-
-  //     dio.options.headers["authorization"] = "Bearer $token";
-  //     dio.options.headers['Accept'] = 'application/json';
-
-  //     http_dio.Response response = await dio.put(
-  //       '${baseURL}auth/update/$id',
-  //       data: {
-  //         '_method': 'PUT',
-  //         'name': newName,
-  //         'contact': newContact,
-  //         'email': newEmail,
-  //         'alamat': newAlamat
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final responeBody = jsonDecode(jsonEncode(response.data));
-  //       return Future.value(responeBody);
-  //     }
-  //     return errorResponseApi.tidakDiketahui;
-  //   } on http_dio.DioException catch (ex) {
-  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
-  //     debugPrintApi(exeption);
-
   //     return null;
   //   }
   // }

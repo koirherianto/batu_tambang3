@@ -1,3 +1,4 @@
+import 'package:batu_tambang/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MePrefrences {
@@ -38,6 +39,21 @@ class MePrefrences {
     }
 
     return Future<Map<String, dynamic>>.value(me);
+  }
+
+  Future<UserModel> getModelMe() async {
+    final SharedPreferences local = await SharedPreferences.getInstance();
+
+    UserModel userModel = UserModel(
+      id: local.getInt('meId') ?? 0,
+      namaLengkap: local.getString('meNamaLengkap') ?? '',
+      namaPanggilan: local.getString('meNamaPanggilan') ?? '',
+      email: local.getString('meEmail') ?? '',
+      role: local.getString('meRole') ?? '',
+      photoUrl: local.getString('meUrlProfil'),
+    );
+
+    return userModel;
   }
 
   Future<bool> deleteMe() async {

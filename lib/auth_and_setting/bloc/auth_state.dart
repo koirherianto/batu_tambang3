@@ -48,10 +48,6 @@ class AuthStateMe extends AuthState {
 
   const AuthStateMe({this.stateView = const InitialStateView()});
 
-  AuthStateMe copyWith({StateView? stateView}) {
-    return AuthStateMe(stateView: stateView ?? this.stateView);
-  }
-
   @override
   List<Object> get props => [stateView];
 }

@@ -1,6 +1,8 @@
 import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
 import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
+import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
 import 'package:batu_tambang/main.dart';
+import 'package:batu_tambang/model/user_model.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -21,46 +23,52 @@ class SettingPage extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 20),
-          Expanded(
-            child: SettingsList(
-              backgroundColor: Colors.white60,
-              sections: [
-                SettingsSection(
-                  title: 'Account',
-                  tiles: [
-                    SettingsTile(
-                      title: 'Profil',
-                      subtitle: 'Nama & Email',
-                      leading: const Icon(Icons.person),
-                      onPressed: (BuildContext context) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => ProfilePage()),
-                        );
-                      },
-                    ),
-                    SettingsTile(
-                      title: 'Password',
-                      subtitle: 'Rubah Password',
-                      leading: const Icon(Icons.password),
-                      onPressed: (BuildContext context) {},
-                    ),
-                    // logoutButton() as SettingsTile,
-                  ],
-                ),
-              ],
-            ),
+          _profilButton(context),
+          SettingsTile(
+            title: 'Password',
+            subtitle: 'Rubah Password',
+            leading: const Icon(Icons.password),
+            onPressed: (BuildContext context) {},
           ),
-          logoutButton()
+          _logoutButton()
         ],
       ),
     );
   }
 
-  BlocBuilder<AuthBloc, AuthState> logoutButton() {
+  FutureBuilder<UserModel> _profilButton(BuildContext context) {
+    return FutureBuilder(
+      future: context.read<MePrefrences>().getModelMe(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          UserModel userModel = snapshot.data as UserModel;
+          return SettingsTile(
+            title: 'Profil',
+            subtitle: 'Nama & Email',
+            leading: const Icon(Icons.person),
+            onPressed: (BuildContext context) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (_) => ProfilePage(userModel: userModel)),
+              );
+            },
+          );
+        }
+        return SettingsTile(
+          title: 'Profil...',
+          subtitle: 'Nama & Email',
+          leading: const Icon(Icons.person),
+        );
+      },
+    );
+  }
+
+  BlocBuilder<AuthBloc, AuthState> _logoutButton() {
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       if (state is LogoutSt) {
         StateView stateView = state.stateView;
-        print(['logout state', state]);
+        // print(['logout state', state]);
         if (stateView is LoadingStateView) {
           return button(isLoading: true);
         }
@@ -81,7 +89,7 @@ class SettingPage extends StatelessWidget {
           SchedulerBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${stateView.data['message']}}'),
+                content: Text('${stateView.data['message']}'),
                 duration: const Duration(seconds: 1),
               ),
             );
