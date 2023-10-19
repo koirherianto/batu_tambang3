@@ -102,5 +102,43 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await Future.delayed(const Duration(seconds: 1));
       emit(const LoginSubmitSt(stateView: InitialStateView()));
     });
+
+    on<LogoutEv>((event, emit) async {
+      emit(const LogoutSt(stateView: LoadingStateView()));
+
+      Map<String, dynamic> response = await authApi.logoutApi(tokenService);
+
+      if (response['success'] == true) {
+        await tokenService.deleteLocalToken();
+        await mePrefrences.deleteMe();
+        emit(LogoutSt(stateView: SuccessStateView(data: response)));
+      }
+
+      if (response['success'] == false) {
+        final Map<String, dynamic> errorMap = response["error"] ?? {};
+        if (errorMap.isNotEmpty) {
+          emit(
+            LogoutSt(stateView: FailedStateView(errorMassage: errorMap)),
+          );
+        }
+
+        final Map<String, dynamic> exeption = response["exeption"] ?? {};
+        if (exeption.isNotEmpty) {
+          emit(
+            LogoutSt(stateView: FailedStateView(errorMassage: exeption)),
+          );
+        }
+
+        final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
+        if (unAuth.isNotEmpty) {
+          emit(
+            const LogoutSt(stateView: UnauthenticatedStateView()),
+          );
+        }
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      emit(const LogoutSt(stateView: InitialStateView()));
+    });
   }
 }

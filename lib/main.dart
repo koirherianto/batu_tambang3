@@ -3,6 +3,7 @@ import 'package:batu_tambang/auth/pages/login_page.dart';
 import 'package:batu_tambang/auth/services/auth_api.dart';
 import 'package:batu_tambang/auth/services/me_prefrences.dart';
 import 'package:batu_tambang/auth/services/token_service.dart';
+import 'package:batu_tambang/index_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -66,7 +67,33 @@ class MyApp extends StatelessWidget {
       routes: {
         '/loginPage': (_) => LoginPage(),
       },
-      home: SafeArea(child: LoginPage()),
+      home: const SafeArea(child: IsLogin()),
+    );
+  }
+}
+
+class IsLogin extends StatelessWidget {
+  const IsLogin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: Future.wait([
+        context.read<TokenService>().isLogin(),
+      ]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          bool isLogin = snapshot.data?[0] ?? false;
+
+          if (isLogin) {
+            return const IndexPage();
+          } else {
+            return LoginPage();
+          }
+        }
+
+        return const CircularProgressIndicator();
+      },
     );
   }
 }

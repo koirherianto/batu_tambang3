@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:batu_tambang/auth/services/token_service.dart';
 import 'package:batu_tambang/static_data/api_exeption.dart';
 import 'package:batu_tambang/static_data/url_api.dart';
 import 'package:dio/dio.dart' as http_dio;
@@ -11,6 +12,7 @@ class AuthApi {
     http_dio.BaseOptions(
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
+      headers: {'Accept': 'application/json'},
     ),
   );
 
@@ -80,6 +82,33 @@ class AuthApi {
     } on http_dio.DioException catch (ex) {
       Map<String, dynamic> exeption =
           apiExeption.getExeptionMessage(ex, 'login');
+      debugPrintApi(exeption);
+      return {'success': false, 'exeption': exeption};
+    }
+  }
+
+  Future<Map<String, dynamic>> logoutApi(TokenService tokenService) async {
+    try {
+      String token = await tokenService.getLocalToken();
+
+      dio.options.headers["authorization"] = "Bearer $token";
+      final String url = '${baseURL}auth/logout';
+
+      http_dio.Response response = await dio.post(url);
+
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'register');
       debugPrintApi(exeption);
       return {'success': false, 'exeption': exeption};
     }
@@ -162,28 +191,6 @@ class AuthApi {
   //   }
   // }
 
-  // Future logoutApi() async {
-  //   try {
-  //     String token = await getLocalToken();
-
-  //     dio.options.headers["authorization"] = "Bearer $token";
-  //     dio.options.headers['Accept'] = 'application/json';
-
-  //     http_dio.Response response = await dio.post('${baseURL}auth/logout');
-
-  //     if (response.statusCode == 200) {
-  //       final responeBody = jsonDecode(jsonEncode(response.data));
-  //       return Future.value(responeBody);
-  //     }
-  //     return errorResponseApi.tidakDiketahui;
-  //   } on http_dio.DioException catch (ex) {
-  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
-  //     debugPrintApi(exeption);
-
-  //     return null;
-  //   }
-  // }
-
   // Future meApi() async {
   //   try {
   //     String token = await getLocalToken();
@@ -224,40 +231,6 @@ class AuthApi {
 
   //     if (response.statusCode == 200) {
   //       final responeBody = jsonDecode(jsonEncode(response.data));
-  //       return Future.value(responeBody);
-  //     }
-  //     return errorResponseApi.tidakDiketahui;
-  //   } on http_dio.DioException catch (ex) {
-  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
-  //     debugPrintApi(exeption);
-
-  //     return null;
-  //   }
-  // }
-
-  // Future updateKandidatNumber({
-  //   required int jmlTps,
-  //   required int jmlAlokasiKursi,
-  //   required int targetJmlPendukung,
-  // }) async {
-  //   String token = await getLocalToken();
-
-  //   try {
-  //     dio.options.headers["authorization"] = "Bearer $token";
-  //     dio.options.headers['Accept'] = 'application/json';
-
-  //     http_dio.Response response = await dio.put(
-  //       '${baseURL}kandidats/updateNumber',
-  //       data: {
-  //         '_method': 'PUT',
-  //         'jml_tps': jmlTps,
-  //         'jml_alokasi_kursi': jmlAlokasiKursi,
-  //         'target_jml_pendukung': targetJmlPendukung,
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final responeBody = response.data;
   //       return Future.value(responeBody);
   //     }
   //     return errorResponseApi.tidakDiketahui;

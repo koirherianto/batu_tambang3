@@ -28,6 +28,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.1
+  flutter_settings_ui: ^2.0.1
   shared_preferences: ^2.2.2
 
 dev_dependencies:

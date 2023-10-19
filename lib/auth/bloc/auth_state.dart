@@ -65,10 +65,10 @@ class AuthPassChangeSt extends AuthState {
   List<Object> get props => [stateView];
 }
 
-class AuthStateLogout extends AuthState {
+class LogoutSt extends AuthState {
   final StateView stateView;
 
-  const AuthStateLogout({this.stateView = const InitialStateView()});
+  const LogoutSt({this.stateView = const InitialStateView()});
 
   @override
   List<Object> get props => [stateView];

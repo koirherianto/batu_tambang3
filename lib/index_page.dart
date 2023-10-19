@@ -15,8 +15,8 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> halaman = const [
-      SettingPage(),
       ProfilePage(),
+      SettingPage(),
     ];
 
     return Scaffold(
