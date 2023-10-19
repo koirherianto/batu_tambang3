@@ -1,0 +1,275 @@
+import 'dart:convert';
+
+import 'package:batu_tambang/static_data/api_exeption.dart';
+import 'package:batu_tambang/static_data/url_api.dart';
+import 'package:dio/dio.dart' as http_dio;
+import 'package:flutter/widgets.dart';
+
+class AuthApi {
+  String baseURL = URLAPI.apiURL;
+  http_dio.Dio dio = http_dio.Dio(
+    http_dio.BaseOptions(
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
+    ),
+  );
+
+  ApiExeption apiExeption = ApiExeption();
+
+  Future registerApi({
+    String namaLengkap = '',
+    String namaPanggilan = '',
+    String email = '',
+    String password = '',
+  }) async {
+    try {
+      dio.options.headers['Accept'] = 'application/json';
+
+      http_dio.Response response = await dio.post(
+        '${baseURL}auth/register',
+        data: {
+          'nama_lengkap': namaLengkap,
+          'nama_panggilan': namaPanggilan,
+          'email': email,
+          'password': password,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      }
+
+      return null;
+    } on http_dio.DioException catch (ex) {
+      List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+      debugPrintApi(exeption);
+
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> loginApi({
+    String email = '',
+    String password = '',
+  }) async {
+    try {
+      dio.options.headers['Accept'] = 'application/json';
+
+      final String url = '${baseURL}auth/login';
+
+      http_dio.Response response = await dio.post(
+        url,
+        data: {'email': email, 'password': password, 'device': 'redmi note 7'},
+      );
+
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+      debugPrintApi(exeption);
+
+      return {'success': false, 'exeption': exeption};
+    }
+  }
+
+  // Future updatePassword({
+  //   required String passLama,
+  //   required String passBaru,
+  //   required String passConfirm,
+  // }) async {
+  //   try {
+  //     String token = await getLocalToken();
+
+  //     dio.options.headers["authorization"] = "Bearer $token";
+  //     dio.options.headers['Accept'] = 'application/json';
+
+  //     String url = '${baseURL}auth/updatePassword';
+
+  //     http_dio.Response response = await dio.put(
+  //       url,
+  //       data: {
+  //         '_method': 'PUT',
+  //         'passwordLama': passLama,
+  //         'passwordBaru': passBaru,
+  //         'passwordConfirm': passConfirm
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responeBody = jsonDecode(jsonEncode(response.data));
+  //       return Future.value(responeBody);
+  //     } else {
+  //       throw http_dio.DioException(
+  //         requestOptions: http_dio.RequestOptions(path: url),
+  //         response: response,
+  //         type: http_dio.DioExceptionType.connectionError,
+  //       );
+  //     }
+  //   } on http_dio.DioException catch (ex) {
+  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+  //     debugPrintApi(exeption);
+  //     return null;
+  //   }
+  // }
+
+  // Future updateProfile({
+  //   required int? id,
+  //   required String newName,
+  //   required String newContact,
+  //   required String newEmail,
+  //   required String newAlamat,
+  // }) async {
+  //   try {
+  //     String token = await getLocalToken();
+
+  //     dio.options.headers["authorization"] = "Bearer $token";
+  //     dio.options.headers['Accept'] = 'application/json';
+
+  //     http_dio.Response response = await dio.put(
+  //       '${baseURL}auth/update/$id',
+  //       data: {
+  //         '_method': 'PUT',
+  //         'name': newName,
+  //         'contact': newContact,
+  //         'email': newEmail,
+  //         'alamat': newAlamat
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responeBody = jsonDecode(jsonEncode(response.data));
+  //       return Future.value(responeBody);
+  //     }
+  //     return errorResponseApi.tidakDiketahui;
+  //   } on http_dio.DioException catch (ex) {
+  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+  //     debugPrintApi(exeption);
+
+  //     return null;
+  //   }
+  // }
+
+  // Future logoutApi() async {
+  //   try {
+  //     String token = await getLocalToken();
+
+  //     dio.options.headers["authorization"] = "Bearer $token";
+  //     dio.options.headers['Accept'] = 'application/json';
+
+  //     http_dio.Response response = await dio.post('${baseURL}auth/logout');
+
+  //     if (response.statusCode == 200) {
+  //       final responeBody = jsonDecode(jsonEncode(response.data));
+  //       return Future.value(responeBody);
+  //     }
+  //     return errorResponseApi.tidakDiketahui;
+  //   } on http_dio.DioException catch (ex) {
+  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+  //     debugPrintApi(exeption);
+
+  //     return null;
+  //   }
+  // }
+
+  // Future meApi() async {
+  //   try {
+  //     String token = await getLocalToken();
+
+  //     dio.options.headers["authorization"] = "Bearer $token";
+  //     dio.options.headers['Accept'] = 'application/json';
+
+  //     http_dio.Response response = await dio.post('${baseURL}auth/me');
+
+  //     if (response.statusCode == 200) {
+  //       final responeBody = jsonDecode(jsonEncode(response.data));
+  //       return Future.value(responeBody);
+  //     }
+  //     return errorResponseApi.tidakDiketahui;
+  //   } on http_dio.DioException catch (ex) {
+  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+  //     debugPrintApi(exeption);
+
+  //     return null;
+  //   }
+  // }
+
+  // Future updateFoto({required int idRelawan, File? gambarProfil}) async {
+  //   try {
+  //     String token = await getLocalToken();
+
+  //     dio.options.headers["authorization"] = "Bearer $token";
+  //     dio.options.headers['Accept'] = 'application/json';
+
+  //     http_dio.FormData formImage = http_dio.FormData.fromMap({
+  //       'gambar_profil': gambarProfil != null
+  //           ? await http_dio.MultipartFile.fromFile(gambarProfil.path)
+  //           : null
+  //     });
+
+  //     http_dio.Response response = await dio
+  //         .post('${baseURL}relawans/updateimage/$idRelawan', data: formImage);
+
+  //     if (response.statusCode == 200) {
+  //       final responeBody = jsonDecode(jsonEncode(response.data));
+  //       return Future.value(responeBody);
+  //     }
+  //     return errorResponseApi.tidakDiketahui;
+  //   } on http_dio.DioException catch (ex) {
+  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+  //     debugPrintApi(exeption);
+
+  //     return null;
+  //   }
+  // }
+
+  // Future updateKandidatNumber({
+  //   required int jmlTps,
+  //   required int jmlAlokasiKursi,
+  //   required int targetJmlPendukung,
+  // }) async {
+  //   String token = await getLocalToken();
+
+  //   try {
+  //     dio.options.headers["authorization"] = "Bearer $token";
+  //     dio.options.headers['Accept'] = 'application/json';
+
+  //     http_dio.Response response = await dio.put(
+  //       '${baseURL}kandidats/updateNumber',
+  //       data: {
+  //         '_method': 'PUT',
+  //         'jml_tps': jmlTps,
+  //         'jml_alokasi_kursi': jmlAlokasiKursi,
+  //         'target_jml_pendukung': targetJmlPendukung,
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responeBody = response.data;
+  //       return Future.value(responeBody);
+  //     }
+  //     return errorResponseApi.tidakDiketahui;
+  //   } on http_dio.DioException catch (ex) {
+  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+  //     debugPrintApi(exeption);
+
+  //     return null;
+  //   }
+  // }
+
+  void debugPrintApi(List<String> exeption) {
+    debugPrint('======================');
+    debugPrint(exeption[2]);
+    debugPrint(exeption[3]);
+    debugPrint(exeption[4]);
+    debugPrint('======================');
+  }
+}
