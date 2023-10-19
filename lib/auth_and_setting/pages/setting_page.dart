@@ -1,6 +1,6 @@
 import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
+import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
 import 'package:batu_tambang/main.dart';
-import 'package:batu_tambang/settings/pages/profil_page.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -34,8 +34,7 @@ class SettingPage extends StatelessWidget {
                       leading: const Icon(Icons.person),
                       onPressed: (BuildContext context) {
                         Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (_) => const ProfilePage()),
+                          MaterialPageRoute(builder: (_) => ProfilePage()),
                         );
                       },
                     ),

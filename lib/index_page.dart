@@ -1,5 +1,5 @@
-import 'package:batu_tambang/settings/pages/profil_page.dart';
-import 'package:batu_tambang/settings/pages/setting_page.dart';
+import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
+import 'package:batu_tambang/auth_and_setting/pages/setting_page.dart';
 import 'package:flutter/material.dart';
 
 class IndexPage extends StatefulWidget {
@@ -14,9 +14,9 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> halaman = const [
+    List<Widget> halaman = [
       ProfilePage(),
-      SettingPage(),
+      const SettingPage(),
     ];
 
     return Scaffold(
