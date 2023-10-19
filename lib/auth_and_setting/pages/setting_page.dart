@@ -1,4 +1,5 @@
 import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
+import 'package:batu_tambang/auth_and_setting/pages/password_page.dart';
 import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
 import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
 import 'package:batu_tambang/main.dart';
@@ -23,54 +24,44 @@ class SettingPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          _profilButton(context),
+          _profilLogic(context),
           SettingsTile(
             title: 'Password',
             subtitle: 'Rubah Password',
             leading: const Icon(Icons.password),
-            onPressed: (BuildContext context) {},
+            onPressed: (BuildContext context) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => PasswordPage()),
+              );
+            },
           ),
-          _logoutButton()
+          _logoutLogic()
         ],
       ),
     );
   }
 
-  FutureBuilder<UserModel> _profilButton(BuildContext context) {
+  FutureBuilder<UserModel> _profilLogic(BuildContext context) {
     return FutureBuilder(
       future: context.read<MePrefrences>().getModelMe(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.hasData) {
           UserModel userModel = snapshot.data as UserModel;
-          return SettingsTile(
-            title: 'Profil',
-            subtitle: 'Nama & Email',
-            leading: const Icon(Icons.person),
-            onPressed: (BuildContext context) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (_) => ProfilePage(userModel: userModel)),
-              );
-            },
-          );
+          return profileButton(userModel: userModel);
         }
-        return SettingsTile(
-          title: 'Profil...',
-          subtitle: 'Nama & Email',
-          leading: const Icon(Icons.person),
-        );
+        return profileButton(isLoading: true);
       },
     );
   }
 
-  BlocBuilder<AuthBloc, AuthState> _logoutButton() {
+  BlocBuilder<AuthBloc, AuthState> _logoutLogic() {
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       if (state is LogoutSt) {
         StateView stateView = state.stateView;
         // print(['logout state', state]);
         if (stateView is LoadingStateView) {
-          return button(isLoading: true);
+          return logoutButton(isLoading: true);
         }
 
         if (stateView is FailedStateView) {
@@ -103,11 +94,31 @@ class SettingPage extends StatelessWidget {
           // do something
         }
       }
-      return button();
+      return logoutButton();
     });
   }
 
-  Widget button({bool isLoading = false}) {
+  Widget profileButton({bool isLoading = false, UserModel? userModel}) {
+    return isLoading
+        ? SettingsTile(
+            title: 'Profil...',
+            subtitle: 'Nama & Email...',
+            leading: const Icon(Icons.person_outline),
+          )
+        : SettingsTile(
+            title: 'Profil',
+            subtitle: 'Nama & Email',
+            leading: const Icon(Icons.person),
+            onPressed: (BuildContext context) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (_) => ProfilePage(userModel: userModel!)),
+              );
+            },
+          );
+  }
+
+  Widget logoutButton({bool isLoading = false}) {
     return isLoading
         ? SettingsTile(
             title: 'Loading...',
