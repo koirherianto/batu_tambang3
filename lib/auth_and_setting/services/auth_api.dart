@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:batu_tambang/auth/services/token_service.dart';
+import 'package:batu_tambang/auth_and_setting/services/token_service.dart';
 import 'package:batu_tambang/static_data/api_exeption.dart';
 import 'package:batu_tambang/static_data/url_api.dart';
 import 'package:dio/dio.dart' as http_dio;

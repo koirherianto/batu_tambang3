@@ -1,5 +1,5 @@
-import 'package:batu_tambang/auth/bloc/auth_bloc.dart';
-import 'package:batu_tambang/auth/pages/register_page.dart';
+import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
+import 'package:batu_tambang/auth_and_setting/pages/register_page.dart';
 import 'package:batu_tambang/index_page.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';

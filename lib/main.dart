@@ -1,8 +1,8 @@
-import 'package:batu_tambang/auth/bloc/auth_bloc.dart';
-import 'package:batu_tambang/auth/pages/login_page.dart';
-import 'package:batu_tambang/auth/services/auth_api.dart';
-import 'package:batu_tambang/auth/services/me_prefrences.dart';
-import 'package:batu_tambang/auth/services/token_service.dart';
+import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
+import 'package:batu_tambang/auth_and_setting/pages/login_page.dart';
+import 'package:batu_tambang/auth_and_setting/services/auth_api.dart';
+import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
+import 'package:batu_tambang/auth_and_setting/services/token_service.dart';
 import 'package:batu_tambang/index_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

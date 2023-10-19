@@ -1,4 +1,4 @@
-import 'package:batu_tambang/auth/bloc/auth_bloc.dart';
+import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:batu_tambang/static_data/decoration.dart';
