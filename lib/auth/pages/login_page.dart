@@ -1,5 +1,6 @@
 import 'package:batu_tambang/auth/bloc/auth_bloc.dart';
 import 'package:batu_tambang/auth/pages/register_page.dart';
+import 'package:batu_tambang/index_page.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:batu_tambang/static_data/decoration.dart';
@@ -92,7 +93,8 @@ class LoginPage extends StatelessWidget {
 
           if (stateView is SuccessStateView) {
             SchedulerBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacementNamed(context, '/indexPage');
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => const IndexPage()));
             });
           }
 
