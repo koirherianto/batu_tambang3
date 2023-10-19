@@ -16,13 +16,13 @@ class SettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.green,
         elevation: 0,
+        backgroundColor: Colors.transparent,
+        title:
+            Text('Pengaturan', style: Theme.of(context).textTheme.titleLarge),
       ),
       body: Column(
         children: [
-          const SizedBox(height: 20),
           _profilButton(context),
           SettingsTile(
             title: 'Password',

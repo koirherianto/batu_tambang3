@@ -20,11 +20,20 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.adaptive.arrow_back, color: Colors.black54),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25),
         child: ListView(
           children: [
-            const SizedBox(height: 75.0),
+            const SizedBox(height: 60.0),
             const Text(
               'Batu Tambang',
               style: TextStyle(fontFamily: 'Trueno', fontSize: 30.0),
