@@ -1,5 +1,4 @@
 import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
-import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
 import 'package:batu_tambang/model/user_model.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +46,6 @@ class ProfilePage extends StatelessWidget {
       builder: (context, state) {
         if (state is ProfileUpdateSt) {
           StateView stateView = state.stateView;
-          print(['stateView', stateView]);
 
           if (stateView is LoadingStateView) {
             return _form(context, isLoading: true);

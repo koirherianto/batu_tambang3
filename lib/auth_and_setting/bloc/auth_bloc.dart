@@ -71,8 +71,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
 
-      print(['response', response]);
-
       if (response['success'] == true) {
         Map<String, dynamic> dataUser = response['data']['user'];
         await mePrefrences.setMe(
