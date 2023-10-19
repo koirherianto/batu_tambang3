@@ -95,6 +95,10 @@ class LoginPage extends StatelessWidget {
               Navigator.pushReplacementNamed(context, '/indexPage');
             });
           }
+
+          if (stateView is UnauthenticatedStateView) {
+            // do something
+          }
         }
         return _form(context);
       },

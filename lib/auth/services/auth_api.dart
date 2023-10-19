@@ -16,7 +16,7 @@ class AuthApi {
 
   ApiExeption apiExeption = ApiExeption();
 
-  Future registerApi({
+  Future<Map<String, dynamic>> registerApi({
     String namaLengkap = '',
     String namaPanggilan = '',
     String email = '',
@@ -25,44 +25,14 @@ class AuthApi {
     try {
       dio.options.headers['Accept'] = 'application/json';
 
-      http_dio.Response response = await dio.post(
-        '${baseURL}auth/register',
-        data: {
-          'nama_lengkap': namaLengkap,
-          'nama_panggilan': namaPanggilan,
-          'email': email,
-          'password': password,
-        },
-      );
+      final String url = '${baseURL}auth/register';
 
-      if (response.statusCode == 200) {
-        final responeBody = jsonDecode(jsonEncode(response.data));
-        return Future.value(responeBody);
-      }
-
-      return null;
-    } on http_dio.DioException catch (ex) {
-      Map<String, dynamic> exeption =
-          apiExeption.getExeptionMessage(ex, 'register');
-      debugPrintApi(exeption);
-
-      return null;
-    }
-  }
-
-  Future<Map<String, dynamic>> loginApi({
-    String email = '',
-    String password = '',
-  }) async {
-    try {
-      dio.options.headers['Accept'] = 'application/json';
-
-      final String url = '${baseURL}auth/login';
-
-      http_dio.Response response = await dio.post(
-        url,
-        data: {'email': email, 'password': password, 'device': 'redmi note 7'},
-      );
+      http_dio.Response response = await dio.post(url, data: {
+        'nama_lengkap': namaLengkap,
+        'nama_panggilan': namaPanggilan,
+        'email': email,
+        'password': password,
+      });
 
       if (response.statusCode == 200) {
         final responeBody = jsonDecode(jsonEncode(response.data));
@@ -77,6 +47,39 @@ class AuthApi {
     } on http_dio.DioException catch (ex) {
       Map<String, dynamic> exeption =
           apiExeption.getExeptionMessage(ex, 'register');
+      debugPrintApi(exeption);
+      return {'success': false, 'exeption': exeption};
+    }
+  }
+
+  Future<Map<String, dynamic>> loginApi({
+    String email = '',
+    String password = '',
+  }) async {
+    try {
+      dio.options.headers['Accept'] = 'application/json';
+
+      final String url = '${baseURL}auth/login';
+
+      http_dio.Response response = await dio.post(url, data: {
+        'email': email,
+        'password': password,
+        'device': 'redmi note 7'
+      });
+
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'login');
       debugPrintApi(exeption);
       return {'success': false, 'exeption': exeption};
     }

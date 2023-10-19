@@ -20,6 +20,49 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.mePrefrences,
     required this.tokenService,
   }) : super(const AuthState()) {
+    on<RegisterSubmitEv>((event, emit) async {
+      emit(const RegisterSubmitSt(stateView: LoadingStateView()));
+
+      Map<String, dynamic> response = await authApi.registerApi(
+        email: event.email,
+        namaLengkap: event.namaLengkap,
+        namaPanggilan: event.namaPanggilan,
+        password: event.password,
+      );
+
+      if (response['success'] == true) {
+        emit(const RegisterSubmitSt(stateView: SuccessStateView()));
+      }
+
+      if (response['success'] == false) {
+        final Map<String, dynamic> errorMap = response["error"] ?? {};
+        if (errorMap.isNotEmpty) {
+          emit(
+            RegisterSubmitSt(
+                stateView: FailedStateView(errorMassage: errorMap)),
+          );
+        }
+
+        final Map<String, dynamic> exeption = response["exeption"] ?? {};
+        if (exeption.isNotEmpty) {
+          emit(
+            RegisterSubmitSt(
+                stateView: FailedStateView(errorMassage: exeption)),
+          );
+        }
+
+        final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
+        if (unAuth.isNotEmpty) {
+          emit(
+            const RegisterSubmitSt(stateView: UnauthenticatedStateView()),
+          );
+        }
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      emit(const RegisterSubmitSt(stateView: InitialStateView()));
+    });
+
     on<LoginSubmitEv>((event, emit) async {
       emit(const LoginSubmitSt(stateView: LoadingStateView()));
 
@@ -29,7 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (response['success'] == true) {
-        // await tokenService.setLocalToken(response['data']['token']);
+        await tokenService.setLocalToken(response['data']['token']);
         emit(const LoginSubmitSt(stateView: SuccessStateView()));
       }
 
@@ -42,9 +85,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
-
-        // print(['exeption bloc', exeption]);
-
         if (exeption.isNotEmpty) {
           emit(
             LoginSubmitSt(stateView: FailedStateView(errorMassage: exeption)),

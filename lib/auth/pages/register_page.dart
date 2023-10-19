@@ -1,12 +1,20 @@
+import 'package:batu_tambang/auth/bloc/auth_bloc.dart';
+import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:batu_tambang/static_data/decoration.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailC = TextEditingController();
+  final TextEditingController _passwordC = TextEditingController();
+  final TextEditingController _namaLengkapC = TextEditingController();
+  final TextEditingController _namaPanggilanC = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Map<String, dynamic> _errMsg = {};
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +33,7 @@ class RegisterPage extends StatelessWidget {
               style: TextStyle(fontFamily: 'Trueno', fontSize: 60.0),
             ),
             const SizedBox(height: 20),
-            _form(context),
+            _formBloc(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -52,52 +60,122 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Form _form(BuildContext context) {
+  BlocBuilder<AuthBloc, AuthState> _formBloc() {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is RegisterSubmitSt) {
+          print(['state Register', state]);
+          StateView stateView = state.stateView;
+
+          if (stateView is LoadingStateView) {
+            return _form(context, isLoading: true);
+          }
+
+          if (stateView is FailedStateView) {
+            _setErrorMsg(stateView.errorMassage, context);
+            if (_formKey.currentState != null) {
+              _formKey.currentState!.validate();
+            }
+          }
+
+          if (stateView is SuccessStateView) {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Berhasil Terdaftar, Silahkan Masuk'),
+                    duration: Duration(seconds: 1)),
+              );
+            });
+            Navigator.pop(context);
+          }
+
+          if (stateView is UnauthenticatedStateView) {
+            // do something
+          }
+        }
+        return _form(context);
+      },
+    );
+  }
+
+  Form _form(BuildContext context, {bool isLoading = false}) {
     return Form(
       key: _formKey,
       child: Column(
         children: [
           TextFormField(
-            controller: _emailController,
-            // validator: (value) => errMsg['email'],
+            controller: _namaLengkapC,
+            validator: (_) => _errMsg['nama_lengkap'],
             keyboardType: TextInputType.name,
             decoration: Decorations.inputDecoration(title: 'NAMA LENGKAP'),
           ),
           TextFormField(
-            controller: _emailController,
-            // validator: (value) => errMsg['email'],
+            controller: _namaPanggilanC,
+            validator: (_) => _errMsg['nama_panggilan'],
             keyboardType: TextInputType.name,
             decoration: Decorations.inputDecoration(title: 'NAMA PANGGILAN'),
           ),
           TextFormField(
-            controller: _emailController,
-            // validator: (value) => errMsg['email'],
+            controller: _emailC,
+            validator: (_) => _errMsg['email'],
             keyboardType: TextInputType.emailAddress,
             decoration: Decorations.inputDecoration(title: 'EMAIL'),
           ),
           TextFormField(
             obscureText: true,
-            controller: _passwordController,
+            controller: _passwordC,
             keyboardType: TextInputType.visiblePassword,
-            // validator: (value) => errMsg['password'],
+            validator: (_) => _errMsg['password'],
             decoration: Decorations.inputDecoration(title: 'PASSWORD'),
           ),
-          const SizedBox(height: 10.0),
           const SizedBox(height: 50.0),
-          GestureDetector(
-            onTap: () {
-              if (_formKey.currentState != null) {
-                if (_formKey.currentState!.validate()) {
-                  // context.read<AuthBloc>().add(
-                  //     LoginEv(email: _email.text, password: _password.text));
-                }
-              }
-            },
-            child: Decorations.submitButton(title: 'Daftar'),
-          ),
+          isLoading
+              ? Decorations.submitButton(title: 'Loading')
+              : GestureDetector(
+                  onTap: () {
+                    _errMsg.clear();
+                    if (_formKey.currentState != null) {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<AuthBloc>().add(RegisterSubmitEv(
+                              namaLengkap: _namaLengkapC.text,
+                              namaPanggilan: _namaPanggilanC.text,
+                              password: _passwordC.text,
+                              email: _emailC.text,
+                            ));
+                      }
+                    }
+                  },
+                  child: Decorations.submitButton(title: 'Daftar'),
+                ),
           const SizedBox(height: 20),
         ],
       ),
     );
+  }
+
+  void _setErrorMsg(Map<String, dynamic> errorMassage, BuildContext context) {
+    _errMsg.clear();
+
+    for (var errMsg in errorMassage.entries) {
+      String key = errMsg.key;
+      var value = errMsg.value;
+
+      if (value is List) {
+        _errMsg[key] = value[0];
+      } else {
+        _errMsg[key] = value;
+      }
+    }
+
+    if (_errMsg['catch'] != null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(' ${_errMsg['catch']}'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      });
+    }
   }
 }
