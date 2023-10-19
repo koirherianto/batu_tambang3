@@ -1,88 +1,89 @@
 import 'package:dio/dio.dart';
 
 class ApiExeption {
-  List<String> getExeptionMessage(DioException exception, String lokasiError) {
+  Map<String, dynamic> getExeptionMessage(
+      DioException exception, String lokasiError) {
     switch (exception.type) {
       case DioExceptionType.badCertificate:
-        return [
-          'Koneksi Bermasalah',
-          'Check your internet connection',
-          'DioExceptionType: Bad Certificate',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Koneksi Bermasalah',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Bad Certificate',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.badResponse:
-        return [
-          'Terjadi Kesalahan',
-          'Check API URL or parameter are invalid',
-          'Bad Response',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Terjadi Kesalahan',
+          'message': 'Check API URL or parameter are invalid',
+          'type': 'DioExceptionType: Bad Response',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.cancel:
-        return [
-          'Permintaan di tolak',
-          'Check your internet connection',
-          'Cancel',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Permintaan di tolak',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Cancel',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.connectionError:
-        return [
-          'Koneksi Bermasalah',
-          'Check your internet connection',
-          'Connection Error',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Koneksi Bermasalah',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Connection Error',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.connectionTimeout:
-        return [
-          'Koneksi Bermasalah',
-          'Check your internet connection',
-          'Connection Timeout',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Koneksi Bermasalah',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Connection Timeout',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.receiveTimeout:
-        return [
-          'Koneksi Bermasalah',
-          'Check your internet connection',
-          'Receive Timeout',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Koneksi Bermasalah',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Receive Timeout',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.sendTimeout:
-        return [
-          'Koneksi Bermasalah',
-          'Check your internet connection',
-          'Send Timeout',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Koneksi Bermasalah',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Send Timeout',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       case DioExceptionType.unknown:
-        return [
-          'Terjadi Kesalahan',
-          'Check your internet connection',
-          'Unknown',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Terjadi Kesalahan',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Unknown',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
 
       default:
-        return [
-          'Terjadi Kesalahan',
-          'Check your internet connection',
-          'Unknown',
-          'Lokasi Error : $lokasiError',
-          'Pesan error : ${exception.message ?? 'N/A'}'
-        ];
+        return {
+          'catch': 'Terjadi Kesalahan',
+          'message': 'Check your internet connection',
+          'type': 'DioExceptionType: Default',
+          'lokasiError': lokasiError,
+          'pesanError': exception.message ?? 'N/A'
+        };
     }
   }
 }

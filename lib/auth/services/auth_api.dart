@@ -9,8 +9,8 @@ class AuthApi {
   String baseURL = URLAPI.apiURL;
   http_dio.Dio dio = http_dio.Dio(
     http_dio.BaseOptions(
-      connectTimeout: const Duration(seconds: 60),
-      receiveTimeout: const Duration(seconds: 60),
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
     ),
   );
 
@@ -42,7 +42,8 @@ class AuthApi {
 
       return null;
     } on http_dio.DioException catch (ex) {
-      List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'register');
       debugPrintApi(exeption);
 
       return null;
@@ -74,9 +75,9 @@ class AuthApi {
         );
       }
     } on http_dio.DioException catch (ex) {
-      List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'register');
       debugPrintApi(exeption);
-
       return {'success': false, 'exeption': exeption};
     }
   }
@@ -265,11 +266,11 @@ class AuthApi {
   //   }
   // }
 
-  void debugPrintApi(List<String> exeption) {
+  void debugPrintApi(Map<String, dynamic> exeption) {
     debugPrint('======================');
-    debugPrint(exeption[2]);
-    debugPrint(exeption[3]);
-    debugPrint(exeption[4]);
+    debugPrint(exeption['type']);
+    debugPrint(exeption['lokasiError']);
+    debugPrint(exeption['pesanError']);
     debugPrint('======================');
   }
 }

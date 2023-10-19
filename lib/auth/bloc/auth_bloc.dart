@@ -42,15 +42,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
+
+        // print(['exeption bloc', exeption]);
+
         if (exeption.isNotEmpty) {
           emit(
             LoginSubmitSt(stateView: FailedStateView(errorMassage: exeption)),
           );
         }
 
-        final Map<String, dynamic> unauthenticated =
-            response["unauthenticated"] ?? {};
-        if (unauthenticated.isNotEmpty) {
+        final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
+        if (unAuth.isNotEmpty) {
           emit(
             const LoginSubmitSt(stateView: UnauthenticatedStateView()),
           );

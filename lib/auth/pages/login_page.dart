@@ -74,42 +74,34 @@ class LoginPage extends StatelessWidget {
   }
 
   BlocBuilder<AuthBloc, AuthState> _formBloc() {
-    bool isLoading = false;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is LoginSubmitSt) {
           print(['state', state]);
           StateView stateView = state.stateView;
           if (stateView is LoadingStateView) {
-            isLoading = true;
-            // return _formLoginWidget(context: context, isLoading: true);
+            return _form(context, isLoading: true);
           }
+
           if (stateView is FailedStateView) {
             _setErrorMsg(stateView.errorMassage, context);
             if (_formKey.currentState != null) {
               _formKey.currentState!.validate();
             }
-            print(['state failed login', stateView.errorMassage]);
-            _errMsg.clear();
           }
 
           if (stateView is SuccessStateView) {
-            // isLoading = false;
-
-            print('bisa login');
-
-            // _get(context);
-            // SchedulerBinding.instance.addPostFrameCallback((_) {
-            //   Navigator.pushReplacementNamed(context, '/indexPage');
-            // });
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacementNamed(context, '/indexPage');
+            });
           }
         }
-        return _form(context, isLoading);
+        return _form(context);
       },
     );
   }
 
-  Form _form(BuildContext context, bool isloading) {
+  Form _form(BuildContext context, {bool isLoading = false}) {
     return Form(
       key: _formKey,
       child: Column(
@@ -124,7 +116,7 @@ class LoginPage extends StatelessWidget {
             obscureText: true,
             controller: _passwordController,
             keyboardType: TextInputType.visiblePassword,
-            // validator: (value) => errMsg['password'],
+            validator: (value) => _errMsg['password'],
             decoration: Decorations.inputDecoration(title: 'PASSWORD'),
           ),
           const SizedBox(height: 10.0),
@@ -152,19 +144,22 @@ class LoginPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 50.0),
-          GestureDetector(
-            onTap: () {
-              if (_formKey.currentState != null) {
-                if (_formKey.currentState!.validate()) {
-                  context.read<AuthBloc>().add(LoginSubmitEv(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      ));
-                }
-              }
-            },
-            child: Decorations.submitButton(title: 'Login'),
-          ),
+          isLoading
+              ? Decorations.submitButton(title: 'Loading')
+              : GestureDetector(
+                  onTap: () {
+                    _errMsg.clear();
+                    if (_formKey.currentState != null) {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<AuthBloc>().add(LoginSubmitEv(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ));
+                      }
+                    }
+                  },
+                  child: Decorations.submitButton(title: 'Login'),
+                )
         ],
       ),
     );
@@ -172,17 +167,23 @@ class LoginPage extends StatelessWidget {
 
   void _setErrorMsg(Map<String, dynamic> errorMassage, BuildContext context) {
     _errMsg.clear();
+
     for (var errMsg in errorMassage.entries) {
       String key = errMsg.key;
       var value = errMsg.value;
-      _errMsg[key] = value?[0];
+
+      if (value is List) {
+        _errMsg[key] = value[0];
+      } else {
+        _errMsg[key] = value;
+      }
     }
 
-    if (_errMsg['default'] != null) {
+    if (_errMsg['catch'] != null) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_errMsg['snackBar']),
+            content: Text(' ${_errMsg['catch']}'),
             duration: const Duration(seconds: 1),
           ),
         );
