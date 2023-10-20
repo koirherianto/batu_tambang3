@@ -58,7 +58,7 @@ class PasswordPage extends StatelessWidget {
           }
 
           if (stateView is FailedStateView) {
-            _setErrorMsg(stateView.errorMassage, context);
+            _setErrorMsg(stateView.errMsg, context);
             if (_formKey.currentState != null) {
               _formKey.currentState!.validate();
             }
@@ -131,10 +131,10 @@ class PasswordPage extends StatelessWidget {
     );
   }
 
-  void _setErrorMsg(Map<String, dynamic> errorMassage, BuildContext context) {
+  void _setErrorMsg(Map<String, dynamic> errMsg, BuildContext context) {
     _errMsg.clear();
 
-    for (var errMsg in errorMassage.entries) {
+    for (var errMsg in errMsg.entries) {
       String key = errMsg.key;
       var value = errMsg.value;
 

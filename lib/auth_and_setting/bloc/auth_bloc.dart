@@ -37,25 +37,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response['success'] == false) {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
-          emit(
-            RegisterSubmitSt(
-                stateView: FailedStateView(errorMassage: errorMap)),
-          );
+          emit(RegisterSubmitSt(stateView: FailedStateView(errMsg: errorMap)));
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
-          emit(
-            RegisterSubmitSt(
-                stateView: FailedStateView(errorMassage: exeption)),
-          );
+          emit(RegisterSubmitSt(stateView: FailedStateView(errMsg: exeption)));
         }
 
         final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
         if (unAuth.isNotEmpty) {
-          emit(
-            const RegisterSubmitSt(stateView: UnauthenticatedStateView()),
-          );
+          emit(const RegisterSubmitSt(stateView: UnauthenticatedStateView()));
         }
       }
 
@@ -89,14 +81,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
           emit(
-            LoginSubmitSt(stateView: FailedStateView(errorMassage: errorMap)),
+            LoginSubmitSt(stateView: FailedStateView(errMsg: errorMap)),
           );
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
           emit(
-            LoginSubmitSt(stateView: FailedStateView(errorMassage: exeption)),
+            LoginSubmitSt(stateView: FailedStateView(errMsg: exeption)),
           );
         }
 
@@ -139,14 +131,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
           emit(
-            ProfileUpdateSt(stateView: FailedStateView(errorMassage: errorMap)),
+            ProfileUpdateSt(stateView: FailedStateView(errMsg: errorMap)),
           );
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
           emit(
-            ProfileUpdateSt(stateView: FailedStateView(errorMassage: exeption)),
+            ProfileUpdateSt(stateView: FailedStateView(errMsg: exeption)),
           );
         }
 
@@ -180,16 +172,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
           emit(
-            PasswordUpdateSt(
-                stateView: FailedStateView(errorMassage: errorMap)),
+            PasswordUpdateSt(stateView: FailedStateView(errMsg: errorMap)),
           );
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
           emit(
-            PasswordUpdateSt(
-                stateView: FailedStateView(errorMassage: exeption)),
+            PasswordUpdateSt(stateView: FailedStateView(errMsg: exeption)),
           );
         }
 
@@ -220,14 +210,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
           emit(
-            LogoutSt(stateView: FailedStateView(errorMassage: errorMap)),
+            LogoutSt(stateView: FailedStateView(errMsg: errorMap)),
           );
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
           emit(
-            LogoutSt(stateView: FailedStateView(errorMassage: exeption)),
+            LogoutSt(stateView: FailedStateView(errMsg: exeption)),
           );
           await tokenService.deleteLocalToken();
           await mePrefrences.deleteMe();
@@ -245,6 +235,47 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await Future.delayed(const Duration(seconds: 1));
       emit(const LogoutSt(stateView: InitialStateView()));
+    });
+
+    on<MeEv>((event, emit) async {
+      emit(const MeSt(stateView: LoadingStateView()));
+
+      Map<String, dynamic> response =
+          await authApi.meApi(tokenService: tokenService);
+
+      if (response['success'] == true) {
+        final Map<String, dynamic> user = response['data']['user'];
+
+        await mePrefrences.setMe(
+            id: user['id'] ?? 0,
+            namaLengkap: user['nama_lengkap'] ?? '',
+            namaPanggilan: user['nama_panggilan'] ?? '',
+            email: user['email'] ?? '',
+            role: user['role'] ?? '',
+            urlProfil: user['url_profil'] ?? '');
+
+        emit(MeSt(stateView: SuccessStateView(data: response)));
+      }
+
+      if (response['success'] == false) {
+        final Map<String, dynamic> errorMap = response["error"] ?? {};
+        if (errorMap.isNotEmpty) {
+          emit(MeSt(stateView: FailedStateView(errMsg: errorMap)));
+        }
+
+        final Map<String, dynamic> exeption = response["exeption"] ?? {};
+        if (exeption.isNotEmpty) {
+          emit(MeSt(stateView: FailedStateView(errMsg: exeption)));
+        }
+
+        final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
+        if (unAuth.isNotEmpty) {
+          emit(const MeSt(stateView: UnauthenticatedStateView()));
+        }
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      emit(const MeSt(stateView: InitialStateView()));
     });
   }
 }

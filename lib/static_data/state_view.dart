@@ -16,8 +16,8 @@ class SuccessStateView extends StateView {
 }
 
 class FailedStateView extends StateView {
-  final Map<String, dynamic> errorMassage;
-  const FailedStateView({this.errorMassage = const {}});
+  final Map<String, dynamic> errMsg;
+  const FailedStateView({this.errMsg = const {}});
 }
 
 class UnauthenticatedStateView extends StateView {

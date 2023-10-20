@@ -43,10 +43,10 @@ class UpdateFotoProfilSt extends AuthState {
   List<Object> get props => [stateView];
 }
 
-class AuthStateMe extends AuthState {
+class MeSt extends AuthState {
   final StateView stateView;
 
-  const AuthStateMe({this.stateView = const InitialStateView()});
+  const MeSt({this.stateView = const InitialStateView()});
 
   @override
   List<Object> get props => [stateView];

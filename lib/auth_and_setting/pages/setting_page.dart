@@ -69,7 +69,7 @@ class SettingPage extends StatelessWidget {
           SchedulerBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(stateView.errorMassage['catch'].toString()),
+                content: Text(stateView.errMsg['catch'].toString()),
                 duration: const Duration(seconds: 1),
               ),
             );
