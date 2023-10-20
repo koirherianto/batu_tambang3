@@ -68,9 +68,9 @@ class SettingPage extends StatelessWidget {
           // pesan logout gagal
           SchedulerBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(' Logout gagal'),
-                duration: Duration(seconds: 1),
+              SnackBar(
+                content: Text(stateView.errorMassage['catch'].toString()),
+                duration: const Duration(seconds: 1),
               ),
             );
           });
@@ -80,7 +80,7 @@ class SettingPage extends StatelessWidget {
           SchedulerBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${stateView.data['message']}'),
+                content: Text('${stateView.data['message'] ?? 'Success'}'),
                 duration: const Duration(seconds: 1),
               ),
             );

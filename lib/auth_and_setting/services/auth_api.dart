@@ -125,6 +125,46 @@ class AuthApi {
     }
   }
 
+  Future<Map<String, dynamic>> updatePassword({
+    required String passLama,
+    required String passBaru,
+    required String passConfirm,
+    required TokenService tokenService,
+  }) async {
+    try {
+      String token = await tokenService.getLocalToken();
+
+      dio.options.headers["authorization"] = "Bearer $token";
+
+      String url = '${baseURL}auth/updatePassword';
+
+      http_dio.Response response = await dio.post(
+        url,
+        data: {
+          'password_lama': passLama,
+          'password_baru': passBaru,
+          'password_confirm': passConfirm
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'update password');
+      debugPrintApi(exeption);
+      return {'success': false, 'exeption': exeption};
+    }
+  }
+
   Future<Map<String, dynamic>> logoutApi(TokenService tokenService) async {
     try {
       String token = await tokenService.getLocalToken();
@@ -154,67 +194,33 @@ class AuthApi {
     }
   }
 
-  // Future updatePassword({
-  //   required String passLama,
-  //   required String passBaru,
-  //   required String passConfirm,
-  // }) async {
-  //   try {
-  //     String token = await getLocalToken();
+  Future<Map<String, dynamic>> meApi({
+    required TokenService tokenService,
+  }) async {
+    try {
+      String token = await tokenService.getLocalToken();
 
-  //     dio.options.headers["authorization"] = "Bearer $token";
-  //     dio.options.headers['Accept'] = 'application/json';
+      dio.options.headers["authorization"] = "Bearer $token";
+      final String url = '${baseURL}auth/me';
+      http_dio.Response response = await dio.post(url);
 
-  //     String url = '${baseURL}auth/updatePassword';
-
-  //     http_dio.Response response = await dio.put(
-  //       url,
-  //       data: {
-  //         '_method': 'PUT',
-  //         'passwordLama': passLama,
-  //         'passwordBaru': passBaru,
-  //         'passwordConfirm': passConfirm
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final responeBody = jsonDecode(jsonEncode(response.data));
-  //       return Future.value(responeBody);
-  //     } else {
-  //       throw http_dio.DioException(
-  //         requestOptions: http_dio.RequestOptions(path: url),
-  //         response: response,
-  //         type: http_dio.DioExceptionType.connectionError,
-  //       );
-  //     }
-  //   } on http_dio.DioException catch (ex) {
-  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
-  //     debugPrintApi(exeption);
-  //     return null;
-  //   }
-  // }
-
-  // Future meApi() async {
-  //   try {
-  //     String token = await getLocalToken();
-
-  //     dio.options.headers["authorization"] = "Bearer $token";
-  //     dio.options.headers['Accept'] = 'application/json';
-
-  //     http_dio.Response response = await dio.post('${baseURL}auth/me');
-
-  //     if (response.statusCode == 200) {
-  //       final responeBody = jsonDecode(jsonEncode(response.data));
-  //       return Future.value(responeBody);
-  //     }
-  //     return errorResponseApi.tidakDiketahui;
-  //   } on http_dio.DioException catch (ex) {
-  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
-  //     debugPrintApi(exeption);
-
-  //     return null;
-  //   }
-  // }
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'Me API');
+      debugPrintApi(exeption);
+      return {'success': false, 'exeption': exeption};
+    }
+  }
 
   // Future updateFoto({required int idRelawan, File? gambarProfil}) async {
   //   try {

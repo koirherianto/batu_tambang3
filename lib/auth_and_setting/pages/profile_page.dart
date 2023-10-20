@@ -112,7 +112,7 @@ class ProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 50.0),
           isLoading
-              ? Decorations.submitButton(title: 'Loading')
+              ? Decorations.submitButton(title: 'Loading', color: Colors.grey)
               : GestureDetector(
                   onTap: () {
                     _errMsg.clear();

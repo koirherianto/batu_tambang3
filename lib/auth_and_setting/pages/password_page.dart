@@ -50,7 +50,7 @@ class PasswordPage extends StatelessWidget {
   BlocBuilder<AuthBloc, AuthState> _formBloc() {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state is ProfileUpdateSt) {
+        if (state is PasswordUpdateSt) {
           StateView stateView = state.stateView;
 
           if (stateView is LoadingStateView) {
@@ -109,17 +109,17 @@ class PasswordPage extends StatelessWidget {
           ),
           const SizedBox(height: 50.0),
           isLoading
-              ? Decorations.submitButton(title: 'Loading')
+              ? Decorations.submitButton(title: 'Loading', color: Colors.grey)
               : GestureDetector(
                   onTap: () {
                     _errMsg.clear();
                     if (_formKey.currentState != null) {
                       if (_formKey.currentState!.validate()) {
-                        // context.read<AuthBloc>().add(ProfileUpdateEv(
-                        //       namaLengkap: _namaLengkapC.text,
-                        //       namaPanggilan: _namaPanggilanC.text,
-                        //       email: _emailC.text,
-                        //     ));
+                        context.read<AuthBloc>().add(PasswordUpdateEv(
+                              passwordLama: _passwordLamaC.text,
+                              passwordBaru: _passwordBaruC.text,
+                              passwordConfirm: _passwordConfirmC.text,
+                            ));
                       }
                     }
                   },
