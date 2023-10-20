@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -30,9 +31,16 @@ class SettingPage extends StatelessWidget {
             subtitle: 'Rubah Password',
             leading: const Icon(Icons.password),
             onPressed: (BuildContext context) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => PasswordPage()),
+              pushNewScreen(
+                context,
+                screen: PasswordPage(),
+                withNavBar: false,
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
               );
+
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(builder: (_) => PasswordPage()),
+              // );
             },
           ),
           _logoutLogic()
@@ -85,8 +93,8 @@ class SettingPage extends StatelessWidget {
               ),
             );
 
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => const IsLogin()));
+            Navigator.of(context, rootNavigator: true).pushReplacement(
+                MaterialPageRoute(builder: (_) => const IsLogin()));
           });
         }
 
@@ -110,9 +118,16 @@ class SettingPage extends StatelessWidget {
             subtitle: 'Nama & Email',
             leading: const Icon(Icons.person),
             onPressed: (BuildContext context) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (_) => ProfilePage(userModel: userModel!)),
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //       builder: (_) => ProfilePage(userModel: userModel!)),
+              // );
+
+              pushNewScreen(
+                context,
+                screen: ProfilePage(userModel: userModel!),
+                withNavBar: false,
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
               );
             },
           );
