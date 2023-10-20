@@ -80,23 +80,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response['success'] == false) {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
-          emit(
-            LoginSubmitSt(stateView: FailedStateView(errMsg: errorMap)),
-          );
+          emit(LoginSubmitSt(stateView: FailedStateView(errMsg: errorMap)));
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
-          emit(
-            LoginSubmitSt(stateView: FailedStateView(errMsg: exeption)),
-          );
+          emit(LoginSubmitSt(stateView: FailedStateView(errMsg: exeption)));
         }
 
         final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
         if (unAuth.isNotEmpty) {
-          emit(
-            const LoginSubmitSt(stateView: UnauthenticatedStateView()),
-          );
+          emit(const LoginSubmitSt(stateView: UnauthenticatedStateView()));
         }
       }
 
@@ -130,23 +124,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response['success'] == false) {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
-          emit(
-            ProfileUpdateSt(stateView: FailedStateView(errMsg: errorMap)),
-          );
+          emit(ProfileUpdateSt(stateView: FailedStateView(errMsg: errorMap)));
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
-          emit(
-            ProfileUpdateSt(stateView: FailedStateView(errMsg: exeption)),
-          );
+          emit(ProfileUpdateSt(stateView: FailedStateView(errMsg: exeption)));
         }
 
         final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
         if (unAuth.isNotEmpty) {
-          emit(
-            const ProfileUpdateSt(stateView: UnauthenticatedStateView()),
-          );
+          emit(const ProfileUpdateSt(stateView: UnauthenticatedStateView()));
         }
       }
 
@@ -171,23 +159,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response['success'] == false) {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
-          emit(
-            PasswordUpdateSt(stateView: FailedStateView(errMsg: errorMap)),
-          );
+          emit(PasswordUpdateSt(stateView: FailedStateView(errMsg: errorMap)));
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
-          emit(
-            PasswordUpdateSt(stateView: FailedStateView(errMsg: exeption)),
-          );
+          emit(PasswordUpdateSt(stateView: FailedStateView(errMsg: exeption)));
         }
 
         final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
         if (unAuth.isNotEmpty) {
-          emit(
-            const PasswordUpdateSt(stateView: UnauthenticatedStateView()),
-          );
+          emit(const PasswordUpdateSt(stateView: UnauthenticatedStateView()));
         }
       }
 
@@ -209,16 +191,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response['success'] == false) {
         final Map<String, dynamic> errorMap = response["error"] ?? {};
         if (errorMap.isNotEmpty) {
-          emit(
-            LogoutSt(stateView: FailedStateView(errMsg: errorMap)),
-          );
+          emit(LogoutSt(stateView: FailedStateView(errMsg: errorMap)));
         }
 
         final Map<String, dynamic> exeption = response["exeption"] ?? {};
         if (exeption.isNotEmpty) {
-          emit(
-            LogoutSt(stateView: FailedStateView(errMsg: exeption)),
-          );
+          emit(LogoutSt(stateView: FailedStateView(errMsg: exeption)));
           await tokenService.deleteLocalToken();
           await mePrefrences.deleteMe();
 
@@ -227,9 +205,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
         if (unAuth.isNotEmpty) {
-          emit(
-            const LogoutSt(stateView: UnauthenticatedStateView()),
-          );
+          emit(const LogoutSt(stateView: UnauthenticatedStateView()));
         }
       }
 

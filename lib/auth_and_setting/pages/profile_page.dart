@@ -8,7 +8,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfilePage extends StatelessWidget {
   final UserModel userModel;
-  ProfilePage({super.key, required this.userModel});
+  ProfilePage({super.key, required this.userModel}) {
+    _emailC.text = userModel.email;
+    _namaLengkapC.text = userModel.namaLengkap;
+    _namaPanggilanC.text = userModel.namaPanggilan;
+  }
 
   final TextEditingController _emailC = TextEditingController();
   final TextEditingController _namaLengkapC = TextEditingController();
@@ -95,19 +99,19 @@ class ProfilePage extends StatelessWidget {
           TextFormField(
             keyboardType: TextInputType.name,
             validator: (_) => _errMsg['nama_lengkap'],
-            controller: _namaLengkapC..text = userModel.namaLengkap,
+            controller: _namaLengkapC,
             decoration: Decorations.inputDecoration(title: 'NAMA LENGKAP'),
           ),
           TextFormField(
             keyboardType: TextInputType.name,
             validator: (_) => _errMsg['nama_panggilan'],
-            controller: _namaPanggilanC..text = userModel.namaPanggilan,
+            controller: _namaPanggilanC,
             decoration: Decorations.inputDecoration(title: 'NAMA PANGGILAN'),
           ),
           TextFormField(
             keyboardType: TextInputType.emailAddress,
             validator: (_) => _errMsg['email'],
-            controller: _emailC..text = userModel.email,
+            controller: _emailC,
             decoration: Decorations.inputDecoration(title: 'EMAIL'),
           ),
           const SizedBox(height: 50.0),
