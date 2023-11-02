@@ -72,6 +72,16 @@ class SettingPage extends StatelessWidget {
           return logoutButton(isLoading: true);
         }
 
+        if (stateView is OflineStateView) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Anda Sedang Offline'),
+                  duration: Duration(seconds: 1)),
+            );
+          });
+        }
+
         if (stateView is FailedStateView) {
           // pesan logout gagal
           SchedulerBinding.instance.addPostFrameCallback((_) {

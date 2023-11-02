@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:batu_tambang/auth_and_setting/services/auth_api.dart';
 import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
 import 'package:batu_tambang/auth_and_setting/services/token_service.dart';
+import 'package:batu_tambang/static_data/connection.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -15,13 +16,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   // // final Database database;
   final MePrefrences mePrefrences;
   final TokenService tokenService;
+  final ConnectionService connectionService;
   AuthBloc({
     required this.authApi,
     required this.mePrefrences,
     required this.tokenService,
+    required this.connectionService,
   }) : super(const AuthState()) {
     on<RegisterSubmitEv>((event, emit) async {
       emit(const RegisterSubmitSt(stateView: LoadingStateView()));
+
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const RegisterSubmitSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const RegisterSubmitSt(stateView: InitialStateView()));
+        return;
+      }
 
       Map<String, dynamic> response = await authApi.registerApi(
         email: event.email,
@@ -57,6 +68,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<LoginSubmitEv>((event, emit) async {
       emit(const LoginSubmitSt(stateView: LoadingStateView()));
+
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const LoginSubmitSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const LoginSubmitSt(stateView: InitialStateView()));
+        return;
+      }
 
       Map<String, dynamic> response = await authApi.loginApi(
         email: event.email,
@@ -100,6 +119,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<ProfileUpdateEv>((event, emit) async {
       emit(const ProfileUpdateSt(stateView: LoadingStateView()));
+
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const ProfileUpdateSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const ProfileUpdateSt(stateView: InitialStateView()));
+        return;
+      }
 
       Map<String, dynamic> response = await authApi.updateProfile(
         email: event.email,
@@ -145,6 +172,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<PasswordUpdateEv>((event, emit) async {
       emit(const PasswordUpdateSt(stateView: LoadingStateView()));
 
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const PasswordUpdateSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const PasswordUpdateSt(stateView: InitialStateView()));
+        return;
+      }
+
       Map<String, dynamic> response = await authApi.updatePassword(
         passLama: event.passwordLama,
         passBaru: event.passwordBaru,
@@ -179,6 +214,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<LogoutEv>((event, emit) async {
       emit(const LogoutSt(stateView: LoadingStateView()));
+
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const LogoutSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const LogoutSt(stateView: InitialStateView()));
+        return;
+      }
 
       Map<String, dynamic> response = await authApi.logoutApi(tokenService);
 
@@ -215,6 +258,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<MeEv>((event, emit) async {
       emit(const MeSt(stateView: LoadingStateView()));
+      bool isOnline = await connectionService.isOnline();
+      if (isOnline) {}
 
       Map<String, dynamic> response =
           await authApi.meApi(tokenService: tokenService);

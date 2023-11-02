@@ -20,6 +20,11 @@ class FailedStateView extends StateView {
   const FailedStateView({this.errMsg = const {}});
 }
 
+class OflineStateView extends StateView {
+  final Map<String, dynamic> data;
+  const OflineStateView({this.data = const {}});
+}
+
 class UnauthenticatedStateView extends StateView {
   const UnauthenticatedStateView();
 }

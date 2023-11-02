@@ -4,6 +4,7 @@ import 'package:batu_tambang/auth_and_setting/services/auth_api.dart';
 import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
 import 'package:batu_tambang/auth_and_setting/services/token_service.dart';
 import 'package:batu_tambang/index_page.dart';
+import 'package:batu_tambang/static_data/connection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,6 +22,7 @@ class ClassStream extends StatelessWidget {
         RepositoryProvider(create: (_) => AuthApi()),
         RepositoryProvider(create: (_) => MePrefrences()),
         RepositoryProvider(create: (_) => TokenService()),
+        RepositoryProvider(create: (_) => ConnectionService()),
       ],
       child: const Aaaa(),
     );
@@ -48,6 +50,7 @@ class BlocStream extends StatelessWidget {
             authApi: context.read<AuthApi>(),
             mePrefrences: context.read<MePrefrences>(),
             tokenService: context.read<TokenService>(),
+            connectionService: context.read<ConnectionService>(),
           ),
         ),
       ],

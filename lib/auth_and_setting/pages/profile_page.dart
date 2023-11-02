@@ -64,6 +64,16 @@ class ProfilePage extends StatelessWidget {
             return _form(context, isLoading: true);
           }
 
+          if (stateView is OflineStateView) {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Anda Sedang Offline'),
+                    duration: Duration(seconds: 1)),
+              );
+            });
+          }
+
           if (stateView is FailedStateView) {
             _setErrorMsg(stateView.errMsg, context);
             if (_formKey.currentState != null) {
