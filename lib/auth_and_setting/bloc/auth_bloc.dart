@@ -258,8 +258,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<MeEv>((event, emit) async {
       emit(const MeSt(stateView: LoadingStateView()));
-      bool isOnline = await connectionService.isOnline();
-      if (isOnline) {}
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const MeSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const MeSt(stateView: InitialStateView()));
+        return;
+      }
 
       Map<String, dynamic> response =
           await authApi.meApi(tokenService: tokenService);
