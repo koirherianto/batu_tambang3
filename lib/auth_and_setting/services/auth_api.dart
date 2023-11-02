@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:batu_tambang/auth_and_setting/services/token_service.dart';
 import 'package:batu_tambang/static_data/api_exeption.dart';
@@ -222,34 +223,41 @@ class AuthApi {
     }
   }
 
-  // Future updateFoto({required int idRelawan, File? gambarProfil}) async {
-  //   try {
-  //     String token = await getLocalToken();
+  Future updateFoto({
+    File? gambarProfil,
+    required TokenService tokenService,
+  }) async {
+    try {
+      final String token = await tokenService.getLocalToken();
 
-  //     dio.options.headers["authorization"] = "Bearer $token";
-  //     dio.options.headers['Accept'] = 'application/json';
+      dio.options.headers["authorization"] = "Bearer $token";
 
-  //     http_dio.FormData formImage = http_dio.FormData.fromMap({
-  //       'gambar_profil': gambarProfil != null
-  //           ? await http_dio.MultipartFile.fromFile(gambarProfil.path)
-  //           : null
-  //     });
+      http_dio.FormData formImage = http_dio.FormData.fromMap({
+        'gambar_profil': gambarProfil != null
+            ? await http_dio.MultipartFile.fromFile(gambarProfil.path)
+            : null
+      });
 
-  //     http_dio.Response response = await dio
-  //         .post('${baseURL}relawans/updateimage/$idRelawan', data: formImage);
+      final String url = '${baseURL}auth/updateimage';
+      http_dio.Response response = await dio.post(url, data: formImage);
 
-  //     if (response.statusCode == 200) {
-  //       final responeBody = jsonDecode(jsonEncode(response.data));
-  //       return Future.value(responeBody);
-  //     }
-  //     return errorResponseApi.tidakDiketahui;
-  //   } on http_dio.DioException catch (ex) {
-  //     List<String> exeption = apiExeption.getExeptionMessage(ex, 'register');
-  //     debugPrintApi(exeption);
-
-  //     return null;
-  //   }
-  // }
+      if (response.statusCode == 200) {
+        final responeBody = jsonDecode(jsonEncode(response.data));
+        return Future.value(responeBody);
+      } else {
+        throw http_dio.DioException(
+          requestOptions: http_dio.RequestOptions(path: url),
+          response: response,
+          type: http_dio.DioExceptionType.connectionError,
+        );
+      }
+    } on http_dio.DioException catch (ex) {
+      Map<String, dynamic> exeption =
+          apiExeption.getExeptionMessage(ex, 'Me API');
+      debugPrintApi(exeption);
+      return {'success': false, 'exeption': exeption};
+    }
+  }
 
   void debugPrintApi(Map<String, dynamic> exeption) {
     debugPrint('======================');

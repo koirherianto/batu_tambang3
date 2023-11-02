@@ -66,13 +66,12 @@ class PasswordUpdateEv extends AuthEvent {
   List<Object> get props => [passwordLama, passwordBaru, passwordConfirm];
 }
 
-class UpdateFotoUserEv extends AuthEvent {
-  final int idRelawan;
+class UpdateFotoProfilEv extends AuthEvent {
   final File? gambarUser;
 
-  const UpdateFotoUserEv({required this.idRelawan, this.gambarUser});
+  const UpdateFotoProfilEv({this.gambarUser});
   @override
-  List<Object> get props => [idRelawan];
+  List<Object> get props => [];
 }
 
 class LogoutEv extends AuthEvent {}

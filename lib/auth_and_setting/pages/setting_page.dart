@@ -157,17 +157,17 @@ class SettingPage extends StatelessWidget {
 }
 
 class UserProfilPicture extends StatelessWidget {
-  File? gambarProfil;
-
   UserProfilPicture({super.key});
 
   @override
+  File? gambarProfil;
   Widget build(BuildContext context) {
+    String? photoUrl = context.read<MePrefrences>().userModel?.photoUrl;
     return StatefulBuilder(
       builder: (context, setState) {
         return InkWell(
           onTap: () async {
-            await pickImage();
+            await pickImage(context);
             setState(() {});
           },
           child: Container(
@@ -187,21 +187,38 @@ class UserProfilPicture extends StatelessWidget {
                       ),
                     ),
                   )
-                : const CircleAvatar(
-                    radius: 60,
-                    backgroundImage:
-                        ExactAssetImage('assets/images/profile.png'),
-                  ),
+                : photoUrl != '' && photoUrl != null
+                    ? Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: Image.network(photoUrl).image,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      )
+                    : const CircleAvatar(
+                        radius: 60,
+                        backgroundImage:
+                            ExactAssetImage('assets/images/profile.png'),
+                      ),
           ),
         );
       },
     );
   }
 
-  Future pickImage() async {
+  Future pickImage(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
     final XFile? imagePicked =
         await picker.pickImage(source: ImageSource.gallery);
-    gambarProfil = File(imagePicked!.path);
+    // gambarProfil = File(imagePicked!.path);
+
+    if (imagePicked != null) {
+      gambarProfil = File(imagePicked.path);
+      // context.read<AuthBloc>().add(UpdateFotoUserEv(gambarUser: gambarProfil));
+    } else {
+      print('gambar tidak dipilih');
+    }
   }
 }

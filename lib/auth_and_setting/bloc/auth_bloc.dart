@@ -90,7 +90,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           namaPanggilan: dataUser['nama_panggilan'] ?? '',
           email: dataUser['email'] ?? '',
           role: dataUser['role'] ?? '',
-          urlProfil: response['url_profil'] ?? '',
+          urlProfil: dataUser['url_profil'] ?? '',
         );
         await tokenService.setLocalToken(response['data']['token']);
         emit(const LoginSubmitSt(stateView: SuccessStateView()));
@@ -143,7 +143,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           namaPanggilan: dataUser['nama_panggilan'] ?? '',
           email: dataUser['email'] ?? '',
           role: dataUser['role'] ?? '',
-          urlProfil: response['url_profil'] ?? '',
+          urlProfil: dataUser['url_profil'] ?? '',
         );
         emit(ProfileUpdateSt(stateView: SuccessStateView(data: response)));
       }
@@ -302,6 +302,57 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await Future.delayed(const Duration(seconds: 1));
       emit(const MeSt(stateView: InitialStateView()));
+    });
+
+    on<UpdateFotoProfilEv>((event, emit) async {
+      emit(const UpdateFotoProfilSt(stateView: LoadingStateView()));
+
+      bool isOfline = await connectionService.isOfline();
+      if (isOfline) {
+        emit(const UpdateFotoProfilSt(stateView: OflineStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const UpdateFotoProfilSt(stateView: InitialStateView()));
+        return;
+      }
+
+      Map<String, dynamic> response = await authApi.updateFoto(
+          gambarProfil: event.gambarUser, tokenService: tokenService);
+
+      if (response['success'] == true) {
+        final Map<String, dynamic> user = response['data']['user'];
+
+        await mePrefrences.setMe(
+            id: user['id'] ?? 0,
+            namaLengkap: user['nama_lengkap'] ?? '',
+            namaPanggilan: user['nama_panggilan'] ?? '',
+            email: user['email'] ?? '',
+            role: user['role'] ?? '',
+            urlProfil: user['url_profil'] ?? '');
+
+        emit(UpdateFotoProfilSt(stateView: SuccessStateView(data: response)));
+      }
+
+      if (response['success'] == false) {
+        final Map<String, dynamic> errorMap = response["error"] ?? {};
+        if (errorMap.isNotEmpty) {
+          emit(
+              UpdateFotoProfilSt(stateView: FailedStateView(errMsg: errorMap)));
+        }
+
+        final Map<String, dynamic> exeption = response["exeption"] ?? {};
+        if (exeption.isNotEmpty) {
+          emit(
+              UpdateFotoProfilSt(stateView: FailedStateView(errMsg: exeption)));
+        }
+
+        final Map<String, dynamic> unAuth = response["unauthenticated"] ?? {};
+        if (unAuth.isNotEmpty) {
+          emit(const UpdateFotoProfilSt(stateView: UnauthenticatedStateView()));
+        }
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      emit(const UpdateFotoProfilSt(stateView: InitialStateView()));
     });
   }
 }

@@ -2,6 +2,8 @@ import 'package:batu_tambang/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MePrefrences {
+  UserModel? userModel;
+
   Future<bool> setMe({
     int id = 0,
     String namaLengkap = '',
@@ -18,6 +20,14 @@ class MePrefrences {
     await local.setString('meEmail', email);
     await local.setString('meRole', role);
     await local.setString('meUrlProfil', urlProfil);
+
+    userModel = UserModel(
+      id: id,
+      namaLengkap: namaLengkap,
+      namaPanggilan: namaPanggilan,
+      email: email,
+      role: role,
+    );
 
     return Future<bool>.value(true);
   }
@@ -38,6 +48,15 @@ class MePrefrences {
       me['id'] = 0;
     }
 
+    userModel = UserModel(
+      id: local.getInt('meId') ?? 0,
+      namaLengkap: local.getString('meNamaLengkap') ?? '',
+      namaPanggilan: local.getString('meNamaPanggilan') ?? '',
+      email: local.getString('meEmail') ?? '',
+      role: local.getString('meRole') ?? '',
+      photoUrl: local.getString('meUrlProfil'),
+    );
+
     return Future<Map<String, dynamic>>.value(me);
   }
 
@@ -53,6 +72,8 @@ class MePrefrences {
       photoUrl: local.getString('meUrlProfil'),
     );
 
+    this.userModel = userModel;
+
     return userModel;
   }
 
@@ -65,6 +86,8 @@ class MePrefrences {
     await local.remove('meEmail');
     await local.remove('meRole');
     await local.remove('meUrlProfil');
+
+    userModel = null;
 
     return true;
   }
