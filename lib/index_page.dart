@@ -1,4 +1,5 @@
 import 'package:batu_tambang/auth_and_setting/pages/setting_page.dart';
+import 'package:batu_tambang/mekanik_book/screens/book_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -15,7 +16,7 @@ class _IndexPageState extends State<IndexPage> {
       PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
-    return const [SettingPage(), SettingPage()];
+    return const [BookPage(), SettingPage()];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {

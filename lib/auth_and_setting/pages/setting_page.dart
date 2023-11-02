@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:batu_tambang/auth_and_setting/bloc/auth_bloc.dart';
 import 'package:batu_tambang/auth_and_setting/pages/password_page.dart';
 import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class SettingPage extends StatelessWidget {
@@ -25,6 +28,7 @@ class SettingPage extends StatelessWidget {
       ),
       body: Column(
         children: [
+          UserProfilPicture(),
           _profilLogic(context),
           SettingsTile(
             title: 'Password',
@@ -37,10 +41,6 @@ class SettingPage extends StatelessWidget {
                 withNavBar: false,
                 pageTransitionAnimation: PageTransitionAnimation.cupertino,
               );
-
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(builder: (_) => PasswordPage()),
-              // );
             },
           ),
           _logoutLogic()
@@ -128,11 +128,6 @@ class SettingPage extends StatelessWidget {
             subtitle: 'Nama & Email',
             leading: const Icon(Icons.person),
             onPressed: (BuildContext context) {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //       builder: (_) => ProfilePage(userModel: userModel!)),
-              // );
-
               pushNewScreen(
                 context,
                 screen: ProfilePage(userModel: userModel!),
@@ -158,5 +153,55 @@ class SettingPage extends StatelessWidget {
               context.read<AuthBloc>().add(LogoutEv());
             },
           );
+  }
+}
+
+class UserProfilPicture extends StatelessWidget {
+  File? gambarProfil;
+
+  UserProfilPicture({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return InkWell(
+          onTap: () async {
+            await pickImage();
+            setState(() {});
+          },
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.teal.shade100, width: 5.0),
+            ),
+            child: gambarProfil != null
+                ? Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: Image.file(gambarProfil!).image,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  )
+                : const CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        ExactAssetImage('assets/images/profile.png'),
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? imagePicked =
+        await picker.pickImage(source: ImageSource.gallery);
+    gambarProfil = File(imagePicked!.path);
   }
 }
