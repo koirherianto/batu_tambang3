@@ -231,6 +231,8 @@ class AuthApi {
       final String token = await tokenService.getLocalToken();
 
       dio.options.headers["authorization"] = "Bearer $token";
+      dio.options.connectTimeout = const Duration(seconds: 10);
+      dio.options.receiveTimeout = const Duration(seconds: 10);
 
       http_dio.FormData formImage = http_dio.FormData.fromMap({
         'gambar_profil': gambarProfil != null
@@ -238,7 +240,7 @@ class AuthApi {
             : null
       });
 
-      final String url = '${baseURL}auth/updateimage';
+      final String url = '${baseURL}auth/updateProfilPicture';
       http_dio.Response response = await dio.post(url, data: formImage);
 
       if (response.statusCode == 200) {
@@ -253,7 +255,7 @@ class AuthApi {
       }
     } on http_dio.DioException catch (ex) {
       Map<String, dynamic> exeption =
-          apiExeption.getExeptionMessage(ex, 'Me API');
+          apiExeption.getExeptionMessage(ex, 'Update Foto Profil');
       debugPrintApi(exeption);
       return {'success': false, 'exeption': exeption};
     }

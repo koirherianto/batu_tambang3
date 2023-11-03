@@ -32,7 +32,7 @@ class PasswordPage extends StatelessWidget {
           children: [
             const SizedBox(height: 60.0),
             const Text(
-              'Batu Tambang',
+              'SSSSSSS',
               style: TextStyle(fontFamily: 'Trueno', fontSize: 30.0),
             ),
             const Text(

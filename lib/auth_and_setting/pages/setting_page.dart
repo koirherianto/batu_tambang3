@@ -43,6 +43,17 @@ class SettingPage extends StatelessWidget {
               );
             },
           ),
+          ElevatedButton(
+              onPressed: () {
+                String? photoUrl =
+                    context.read<MePrefrences>().userModel?.photoUrl;
+                String? nama =
+                    context.read<MePrefrences>().userModel?.namaLengkap;
+
+                print(nama);
+                print(photoUrl);
+              },
+              child: Text('csac')),
           _logoutLogic()
         ],
       ),
@@ -159,16 +170,23 @@ class SettingPage extends StatelessWidget {
 class UserProfilPicture extends StatelessWidget {
   UserProfilPicture({super.key});
 
-  @override
   File? gambarProfil;
+  @override
   Widget build(BuildContext context) {
     String? photoUrl = context.read<MePrefrences>().userModel?.photoUrl;
+    print(photoUrl);
     return StatefulBuilder(
       builder: (context, setState) {
         return InkWell(
-          onTap: () async {
-            await pickImage(context);
-            setState(() {});
+          onTap: () {
+            pickImage(context).then((bool haveFile) {
+              haveFile
+                  ? context
+                      .read<AuthBloc>()
+                      .add(UpdateFotoProfilEv(gambarUser: gambarProfil))
+                  : null;
+              setState(() {});
+            });
           },
           child: Container(
             width: 150,
@@ -208,17 +226,18 @@ class UserProfilPicture extends StatelessWidget {
     );
   }
 
-  Future pickImage(BuildContext context) async {
+  Future<bool> pickImage(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
     final XFile? imagePicked =
         await picker.pickImage(source: ImageSource.gallery);
-    // gambarProfil = File(imagePicked!.path);
 
     if (imagePicked != null) {
       gambarProfil = File(imagePicked.path);
-      // context.read<AuthBloc>().add(UpdateFotoUserEv(gambarUser: gambarProfil));
+      return true;
+      //
     } else {
       print('gambar tidak dipilih');
+      return false;
     }
   }
 }

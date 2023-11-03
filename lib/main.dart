@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Batu Tambang',
+      title: 'Batu SSSSSSS',
       debugShowCheckedModeBanner: false,
       routes: {
         '/loginPage': (_) => LoginPage(),
@@ -91,6 +91,7 @@ class IsLogin extends StatelessWidget {
           if (isLogin) {
             return const IndexPage();
           } else {
+            // context.read<AuthBloc>().add(MeEv());
             return LoginPage();
           }
         }
