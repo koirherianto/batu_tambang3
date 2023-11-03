@@ -270,8 +270,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Map<String, dynamic> response = await authApi.updateFoto(
           gambarProfil: event.gambarUser, tokenService: tokenService);
 
-      print(['response', response]);
-
       if (response['success'] == true) {
         final Map<String, dynamic> user = response['data'];
 

@@ -7,6 +7,7 @@ class Decorations {
   static const Color yellowColor = Color(0xFFFFFF00);
   static const Color orangeColor = Color(0xFFFFA500);
   static const Color titikHijau = Color(0xFF00AF19);
+  static const Color blackColor = Colors.black54;
 
   static InputDecoration inputDecoration({required String title}) {
     return InputDecoration(

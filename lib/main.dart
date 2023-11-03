@@ -91,7 +91,7 @@ class IsLogin extends StatelessWidget {
           if (isLogin) {
             return const IndexPage();
           } else {
-            // context.read<AuthBloc>().add(MeEv());
+            context.read<AuthBloc>().add(MeEv());
             return LoginPage();
           }
         }

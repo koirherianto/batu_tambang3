@@ -6,7 +6,9 @@ import 'package:batu_tambang/auth_and_setting/pages/profile_page.dart';
 import 'package:batu_tambang/auth_and_setting/services/me_prefrences.dart';
 import 'package:batu_tambang/main.dart';
 import 'package:batu_tambang/model/user_model.dart';
+import 'package:batu_tambang/static_data/decoration.dart';
 import 'package:batu_tambang/static_data/state_view.dart';
+import 'package:batu_tambang/static_data/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +31,8 @@ class SettingPage extends StatelessWidget {
       body: Column(
         children: [
           UserProfilPicture(),
+          const SizedBox(height: 10),
+          getNameUser(context),
           _profilLogic(context),
           SettingsTile(
             title: 'Password',
@@ -43,17 +47,6 @@ class SettingPage extends StatelessWidget {
               );
             },
           ),
-          ElevatedButton(
-              onPressed: () {
-                String? photoUrl =
-                    context.read<MePrefrences>().userModel?.photoUrl;
-                String? nama =
-                    context.read<MePrefrences>().userModel?.namaLengkap;
-
-                print(nama);
-                print(photoUrl);
-              },
-              child: Text('csac')),
           _logoutLogic()
         ],
       ),
@@ -78,7 +71,6 @@ class SettingPage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       if (state is LogoutSt) {
         StateView stateView = state.stateView;
-        // print(['logout state', state]);
         if (stateView is LoadingStateView) {
           return logoutButton(isLoading: true);
         }
@@ -94,7 +86,6 @@ class SettingPage extends StatelessWidget {
         }
 
         if (stateView is FailedStateView) {
-          // pesan logout gagal
           SchedulerBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -165,65 +156,135 @@ class SettingPage extends StatelessWidget {
             },
           );
   }
+
+  Widget getNameUser(BuildContext context) {
+    return FutureBuilder<UserModel>(
+        future: context.read<MePrefrences>().getModelMe(),
+        builder: (BuildContext context, AsyncSnapshot<UserModel> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              return Column(
+                children: [
+                  Text(
+                    (snapshot.data?.namaLengkap ?? '').toCapitalized2(),
+                    style: const TextStyle(
+                      color: Decorations.blackColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    (snapshot.data?.role ?? '').toCapitalized2(),
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Decorations.blackColor.withOpacity(.3),
+                    ),
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text('Terjadi kesalahan: ${snapshot.error}');
+            }
+          }
+          return const SizedBox();
+        });
+  }
 }
 
+// ignore: must_be_immutable
 class UserProfilPicture extends StatelessWidget {
   UserProfilPicture({super.key});
 
   File? gambarProfil;
   @override
   Widget build(BuildContext context) {
-    String? photoUrl = context.read<MePrefrences>().userModel?.photoUrl;
-    print(photoUrl);
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return InkWell(
-          onTap: () {
-            pickImage(context).then((bool haveFile) {
-              haveFile
-                  ? context
-                      .read<AuthBloc>()
-                      .add(UpdateFotoProfilEv(gambarUser: gambarProfil))
-                  : null;
-              setState(() {});
-            });
-          },
-          child: Container(
+    return InkWell(
+        onTap: () {
+          pickImage(context).then((bool haveFile) {
+            haveFile
+                ? context
+                    .read<AuthBloc>()
+                    .add(UpdateFotoProfilEv(gambarUser: gambarProfil))
+                : null;
+          });
+        },
+        child: Container(
             width: 150,
             height: 150,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.teal.shade100, width: 5.0),
             ),
-            child: gambarProfil != null
-                ? Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: Image.file(gambarProfil!).image,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  )
-                : photoUrl != '' && photoUrl != null
-                    ? Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: Image.network(photoUrl).image,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      )
-                    : const CircleAvatar(
-                        radius: 60,
-                        backgroundImage:
-                            ExactAssetImage('assets/images/profile.png'),
-                      ),
-          ),
-        );
-      },
-    );
+            child: _avatarLogic()));
+  }
+
+  BlocBuilder<AuthBloc, AuthState> _avatarLogic() {
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is UpdateFotoProfilSt) {
+        StateView stateView = state.stateView;
+        if (stateView is LoadingStateView) {
+          return const CircularProgressIndicator();
+        }
+
+        if (stateView is OflineStateView) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Anda Sedang Offline'),
+                  duration: Duration(seconds: 1)),
+            );
+          });
+        }
+
+        if (stateView is FailedStateView) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(stateView.errMsg['catch'].toString()),
+                duration: const Duration(seconds: 1),
+              ),
+            );
+          });
+        }
+
+        if (stateView is SuccessStateView) {
+          return profileImage(context);
+        }
+
+        if (stateView is UnauthenticatedStateView) {
+          // do something
+        }
+      }
+      return profileImage(context);
+    });
+  }
+
+  Widget profileImage(BuildContext context) {
+    String? photoUrl = context.read<MePrefrences>().userModel?.photoUrl;
+    return gambarProfil != null
+        ? Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: Image.file(gambarProfil!).image,
+                fit: BoxFit.fill,
+              ),
+            ),
+          )
+        : photoUrl != '' && photoUrl != null
+            ? Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: Image.network(photoUrl).image,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              )
+            : const CircleAvatar(
+                radius: 60,
+                backgroundImage: ExactAssetImage('assets/images/profile.png'),
+              );
   }
 
   Future<bool> pickImage(BuildContext context) async {
@@ -234,9 +295,7 @@ class UserProfilPicture extends StatelessWidget {
     if (imagePicked != null) {
       gambarProfil = File(imagePicked.path);
       return true;
-      //
     } else {
-      print('gambar tidak dipilih');
       return false;
     }
   }
