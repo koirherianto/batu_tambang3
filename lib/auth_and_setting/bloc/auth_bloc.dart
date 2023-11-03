@@ -256,6 +256,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<UpdateFotoProfilEv>((event, emit) async {
+      // update data user dan image
+      if (event.gambarUser == null) {
+        await authApi.meApi(tokenService: tokenService);
+        emit(const UpdateFotoProfilSt(stateView: SuccessStateView()));
+        await Future.delayed(const Duration(seconds: 1));
+        emit(const UpdateFotoProfilSt(stateView: InitialStateView()));
+        return;
+      }
+
       emit(const UpdateFotoProfilSt(stateView: LoadingStateView()));
 
       bool isOfline = await connectionService.isOfline();

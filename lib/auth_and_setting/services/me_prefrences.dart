@@ -27,6 +27,7 @@ class MePrefrences {
       namaPanggilan: namaPanggilan,
       email: email,
       role: role,
+      photoUrl: urlProfil,
     );
 
     return Future<bool>.value(true);

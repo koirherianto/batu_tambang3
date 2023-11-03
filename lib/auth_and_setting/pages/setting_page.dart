@@ -174,7 +174,7 @@ class SettingPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    (snapshot.data?.role ?? '').toCapitalized2(),
+                    (snapshot.data?.namaPanggilan ?? '').toCapitalized2(),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Decorations.blackColor.withOpacity(.3),
@@ -183,7 +183,7 @@ class SettingPage extends StatelessWidget {
                 ],
               );
             } else if (snapshot.hasError) {
-              return Text('Terjadi kesalahan: ${snapshot.error}');
+              return const Text('Terjadi kesalahan');
             }
           }
           return const SizedBox();
@@ -198,6 +198,8 @@ class UserProfilPicture extends StatelessWidget {
   File? gambarProfil;
   @override
   Widget build(BuildContext context) {
+    // update tanpa image berarti mereftesh data foto
+    context.read<AuthBloc>().add(const UpdateFotoProfilEv());
     return InkWell(
         onTap: () {
           pickImage(context).then((bool haveFile) {
@@ -261,6 +263,7 @@ class UserProfilPicture extends StatelessWidget {
 
   Widget profileImage(BuildContext context) {
     String? photoUrl = context.read<MePrefrences>().userModel?.photoUrl;
+
     return gambarProfil != null
         ? Container(
             decoration: BoxDecoration(
@@ -285,6 +288,14 @@ class UserProfilPicture extends StatelessWidget {
                 radius: 60,
                 backgroundImage: ExactAssetImage('assets/images/profile.png'),
               );
+  }
+
+  Future<String?> getUrlPicturProfile(BuildContext context) async {
+    String? photoUrl;
+    final userModel = await context.read<MePrefrences>().getModelMe();
+    photoUrl = userModel.photoUrl;
+
+    return photoUrl;
   }
 
   Future<bool> pickImage(BuildContext context) async {
