@@ -13,7 +13,6 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthApi authApi;
-  // // final Database database;
   final MePrefrences mePrefrences;
   final TokenService tokenService;
   final ConnectionService connectionService;
