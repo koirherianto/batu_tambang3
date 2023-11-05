@@ -94,8 +94,8 @@ class RegisterPage extends StatelessWidget {
                     content: Text('Berhasil Terdaftar, Silahkan Masuk'),
                     duration: Duration(seconds: 1)),
               );
+              Navigator.pop(context);
             });
-            Navigator.pop(context);
           }
 
           if (stateView is UnauthenticatedStateView) {

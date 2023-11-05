@@ -68,6 +68,7 @@ class ProfilePage extends StatelessWidget {
             SchedulerBinding.instance.addPostFrameCallback((_) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
+                    behavior: SnackBarBehavior.floating,
                     content: Text('Anda Sedang Offline'),
                     duration: Duration(seconds: 1)),
               );
@@ -88,8 +89,8 @@ class ProfilePage extends StatelessWidget {
                     content: Text('${stateView.data['message'] ?? 'Success'}'),
                     duration: const Duration(seconds: 1)),
               );
+              Navigator.pop(context);
             });
-            Navigator.pop(context);
           }
 
           if (stateView is UnauthenticatedStateView) {

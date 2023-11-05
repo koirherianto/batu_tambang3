@@ -81,8 +81,8 @@ class PasswordPage extends StatelessWidget {
                     content: Text('${stateView.data['message'] ?? 'Success'}'),
                     duration: const Duration(seconds: 1)),
               );
+              Navigator.pop(context);
             });
-            Navigator.pop(context);
           }
 
           if (stateView is UnauthenticatedStateView) {
